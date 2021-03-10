@@ -4,8 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_signin_button/flutter_signin_button.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
-
-import '../widgets/base_ui.dart';
+import 'package:shimmer/shimmer.dart';
 
 class LoginScreen extends StatefulWidget {
   static const String loginScreen = '/loginscreen';
@@ -123,74 +122,114 @@ class _LoginScreenState extends State<LoginScreen> {
       body: ModalProgressHUD(
         inAsyncCall: _isStartRegister,
         child: SafeArea(
-          child: BaseUI(
-            fontWeight2: FontWeight.w500,
-            padding: const EdgeInsets.only(
-                left: 18, top: 40), //this is to simplyfy widget tree
-            text1: 'Event',
-            text2: 'Planner',
-            fontWeight1: FontWeight.w900,
-            fontsize1: 50,
-            fontsize2: 50,
-            height: 70,
-            radius: BorderRadius.only(
-              topLeft: Radius.circular(40),
-            ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Expanded(child: Container()),
-                RaisedButton.icon(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
+          child: Stack(
+            children: [
+              Container(
+                decoration: BoxDecoration(
+                  color: Color(0xFF033249),
+                  image: DecorationImage(
+                    fit: BoxFit.fill,
+                    image: AssetImage('assets/images/bgImage.PNG'),
+                    colorFilter: ColorFilter.mode(
+                        Color(0xFF033249).withOpacity(0.25), BlendMode.dstATop),
                   ),
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 8, horizontal: 35),
-                  textColor: Colors.white,
-                  color: kdarkTeal,
-                  onPressed: () {},
-                  icon: Icon(
-                    Icons.phone,
+                ),
+              ),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  SizedBox(height: 70),
+                  Row(
+                    children: [
+                      SizedBox(width: 130),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Shimmer.fromColors(
+                            baseColor: Color(0xFFFF8038),
+                            highlightColor: Colors.amber.shade300,
+                            child: Text(
+                              'Event',
+                              style: kloginText.copyWith(
+                                fontSize: 50,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                          Shimmer.fromColors(
+                            baseColor: Color(0xFFFF8038),
+                            highlightColor: Colors.amber.shade300,
+                            child: Text(
+                              'Planner',
+                              style: kloginText.copyWith(
+                                fontSize: 50,
+                                fontWeight: FontWeight.w900,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                  Expanded(child: Container()),
+                  RaisedButton.icon(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    padding:
+                        const EdgeInsets.symmetric(vertical: 8, horizontal: 50),
+                    textColor: Color(0xFF033249),
                     color: Colors.white,
+                    onPressed: () {},
+                    icon: Icon(
+                      Icons.phone,
+                      color: Color(0xFF033249),
+                    ),
+                    label: Text('Sign in using phone'),
+                    highlightElevation: 15,
                   ),
-                  label: Text('Sign in using phone'),
-                  highlightElevation: 15,
-                ),
-                SizedBox(height: 20),
-                Text(
-                  'Or',
-                  style:
-                      TextStyle(color: kdarkTeal, fontWeight: FontWeight.w600),
-                ),
-                SizedBox(height: 20),
-                SignInButton(
-                  Buttons.Google,
-                  onPressed: onTapSignInWithGoogle,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 2, horizontal: 3.5),
-                ),
-                Expanded(child: Container()),
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 30),
-                  child: Text(
-                    'Made  with  ❤  in  UDAIPUR.',
-                    style: TextStyle(
-                      color: kdarkTeal,
-                      letterSpacing: 2,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 15,
+                  SizedBox(height: 20),
+                  Shimmer.fromColors(
+                    baseColor: Color(0xFFFF8038),
+                    highlightColor: Colors.amber.shade300,
+                    child: Text(
+                      'Or',
+                      style: TextStyle(
+                          color: Color(0xFFFF8038),
+                          fontWeight: FontWeight.w600,
+                          fontSize: 17),
                     ),
                   ),
-                ),
-              ],
-            ),
-            // AuthForm(
-            //   tryLoginUser: _tryLoginUser,
-            //   googleSignIn: onTapSignInWithGoogle,
-            // ),
+                  SizedBox(height: 20),
+                  SignInButton(
+                    Buttons.Google,
+                    onPressed: onTapSignInWithGoogle,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    padding:
+                        const EdgeInsets.symmetric(vertical: 2, horizontal: 12),
+                  ),
+                  SizedBox(height: 70),
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 30),
+                    child: Shimmer.fromColors(
+                      baseColor: Color(0xFFFF8038),
+                      highlightColor: Colors.amber.shade300,
+                      child: Text(
+                        'Your Choice Our Plan!',
+                        style: TextStyle(
+                          color: Color(0xFFFF8038),
+                          letterSpacing: 2,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 15,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
           ),
         ),
       ),
