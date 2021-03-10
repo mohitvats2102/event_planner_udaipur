@@ -6,6 +6,8 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
 import 'package:shimmer/shimmer.dart';
 
+import 'home_screen.dart';
+
 class LoginScreen extends StatefulWidget {
   static const String loginScreen = '/loginscreen';
 
@@ -23,11 +25,15 @@ class _LoginScreenState extends State<LoginScreen> {
       _isStartRegister = true;
     });
     try {
+      print('1');
       await signInWithGoogle();
+      print('2');
       setState(() {
         _isStartRegister = false;
       });
-      // Navigator.pushReplacementNamed(context, CategoryScreen.categoryScreen);
+      print('3');
+      Navigator.pushReplacementNamed(context, HomeScreen.homeScreen);
+      print('4');
     } catch (e) {
       setState(() {
         _isStartRegister = false;
@@ -149,21 +155,10 @@ class _LoginScreenState extends State<LoginScreen> {
                             baseColor: Color(0xFFFF8038),
                             highlightColor: Colors.amber.shade300,
                             child: Text(
-                              'Event',
+                              '  Event\nPlanner',
                               style: kloginText.copyWith(
                                 fontSize: 50,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ),
-                          Shimmer.fromColors(
-                            baseColor: Color(0xFFFF8038),
-                            highlightColor: Colors.amber.shade300,
-                            child: Text(
-                              'Planner',
-                              style: kloginText.copyWith(
-                                fontSize: 50,
-                                fontWeight: FontWeight.w900,
+                                fontWeight: FontWeight.w700,
                               ),
                             ),
                           ),
@@ -176,8 +171,12 @@ class _LoginScreenState extends State<LoginScreen> {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),
-                    padding:
-                        const EdgeInsets.symmetric(vertical: 8, horizontal: 50),
+                    padding: const EdgeInsets.only(
+                      right: 70,
+                      left: 20,
+                      top: 7,
+                      bottom: 7,
+                    ),
                     textColor: Color(0xFF033249),
                     color: Colors.white,
                     onPressed: () {},
@@ -185,7 +184,10 @@ class _LoginScreenState extends State<LoginScreen> {
                       Icons.phone,
                       color: Color(0xFF033249),
                     ),
-                    label: Text('Sign in using phone'),
+                    label: Text(
+                      'Sign in using phone',
+                      style: TextStyle(fontWeight: FontWeight.w600),
+                    ),
                     highlightElevation: 15,
                   ),
                   SizedBox(height: 20),
@@ -208,7 +210,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       borderRadius: BorderRadius.circular(10),
                     ),
                     padding:
-                        const EdgeInsets.symmetric(vertical: 2, horizontal: 12),
+                        const EdgeInsets.symmetric(vertical: 2, horizontal: 20),
                   ),
                   SizedBox(height: 70),
                   Padding(
@@ -217,7 +219,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       baseColor: Color(0xFFFF8038),
                       highlightColor: Colors.amber.shade300,
                       child: Text(
-                        'Your Choice Our Plan!',
+                        'Your Choices Our Plan!',
                         style: TextStyle(
                           color: Color(0xFFFF8038),
                           letterSpacing: 2,
