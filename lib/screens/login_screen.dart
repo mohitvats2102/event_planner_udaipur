@@ -25,19 +25,18 @@ class _LoginScreenState extends State<LoginScreen> {
       _isStartRegister = true;
     });
     try {
-      print('1');
       await signInWithGoogle();
-      print('2');
       setState(() {
         _isStartRegister = false;
       });
-      print('3');
       Navigator.pushReplacementNamed(context, HomeScreen.homeScreen);
-      print('4');
-    } catch (e) {
+    } on NoSuchMethodError catch (e) {
+      print('in Catch.....');
       setState(() {
         _isStartRegister = false;
       });
+      print(e.toString());
+    } catch (e) {
       print(e.message);
     }
   }
