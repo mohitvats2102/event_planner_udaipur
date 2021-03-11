@@ -1,6 +1,6 @@
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:event_planner_udaipur/constant.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
@@ -31,31 +31,6 @@ class _HomeScreenState extends State<HomeScreen> {
   int _currentIndex = 0;
   int _currentName = 0;
 
-  List<String> _imgList = [
-    'https://www.holidify.com/blog/wp-content/uploads/2014/09/oberoi_udaivilas.jpg',
-    'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQw9mnXXuzDOVJJpDLSRnsxOfPoxSV2ekV4Og&usqp=CAU',
-    'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTmt0suRUymhkVqUiQ611Nr32z3SA26__0vOA&usqp=CAU',
-    'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQa-_ia1TGvY8gx72772Is4rNM3iKD-CJfPkQ&usqp=CAU',
-  ];
-
-  List<String> _eventList = [
-    'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS_7fDZlJG3PI2xTGheTivTascs_zyT8U0ojg&usqp=CAU',
-    'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSzmQqyTj-NUh4nClx8dY-ZOBcjQgkkGyKwCg&usqp=CAU',
-    'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQlWuG4Y990Jd2p_jxurikSOXIGb52QgIM31g&usqp=CAU',
-    'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT6t3AvBmwE-yakDSLOlaWW-L-_WndyNTAMfg&usqp=CAU',
-    'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS_-ruSk5N9omSfRSqxCp9CKKFfZm4KsoCC3g&usqp=CAU',
-    'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS4U-BmDfpMue-4qgKxB1AFO-ijHc5DOWE31A&usqp=CAU',
-    'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSL_BBXjSEP8ZDGxxvBZkNywATF2rQXEPO9EA&usqp=CAU',
-    'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRx9T18H95YIj5PxyBuNX3ZW6I1JCXEe-axtA&usqp=CAU',
-  ];
-
-  List<String> _imgName = [
-    'Sundaram Garden',
-    'Ashoka Garden',
-    'Taquilla Restaurent',
-    'GreenLand Hotel',
-  ];
-
   List<T> map<T>(List list, Function handler) {
     List<T> result = [];
     for (int i = 0; i < list.length; i++) result.add(handler(i, list[i]));
@@ -66,17 +41,28 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Color(0xFF033249),
+      drawer: Drawer(),
       appBar: AppBar(
+        iconTheme: IconThemeData(
+          color: Color(
+            0xFFFF8038,
+          ),
+        ),
+        elevation: 0,
         actions: [
           IconButton(
-            icon: Icon(Icons.logout),
+            icon: Icon(Icons.logout, color: Color(0xFFFF8038)),
             onPressed: () {
               logout(context);
             },
           )
         ],
         backgroundColor: Theme.of(context).primaryColor,
-        title: Text('Event Planner'),
+        title: Text(
+          'Event Planner',
+          style: TextStyle(color: Theme.of(context).accentColor),
+        ),
       ),
       body: SafeArea(
         child: Padding(
@@ -94,8 +80,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 'Trending Venues',
                 style: TextStyle(
                   fontSize: 25,
-                  fontWeight: FontWeight.bold,
-                  color: Theme.of(context).primaryColor,
+                  fontWeight: FontWeight.w500,
+                  color: Theme.of(context).accentColor,
                 ),
               ),
               Container(
@@ -104,7 +90,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     CarouselSlider(
-                      items: _imgList.map(
+                      items: venueImgList.map(
                         (imgUrl) {
                           return Padding(
                             padding: const EdgeInsets.only(top: 15),
@@ -131,7 +117,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     padding: EdgeInsets.all(5),
                                     width: 200,
                                     child: Text(
-                                      _imgName[_currentName],
+                                      venueImgName[_currentName],
                                       style: TextStyle(
                                         fontSize: 20,
                                         fontWeight: FontWeight.bold,
@@ -167,11 +153,11 @@ class _HomeScreenState extends State<HomeScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: map(
-                        _imgList,
+                        venueImgList,
                         (index, url) {
                           return Container(
-                            height: 7,
-                            width: 7,
+                            height: 5,
+                            width: 5,
                             margin: EdgeInsets.symmetric(
                               horizontal: 2,
                               vertical: 10,
@@ -180,7 +166,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               shape: BoxShape.circle,
                               color: _currentIndex == index
                                   ? Color(0xFFFF8038)
-                                  : Color(0xFF033249),
+                                  : Color(0xFFFFFFFF),
                             ),
                           );
                         },
@@ -194,8 +180,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 'Choose Your Event',
                 style: TextStyle(
                   fontSize: 25,
-                  fontWeight: FontWeight.bold,
-                  color: Theme.of(context).primaryColor,
+                  fontWeight: FontWeight.w500,
+                  color: Theme.of(context).accentColor,
                 ),
               ),
               SizedBox(height: 20),
@@ -203,7 +189,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Container(
                   padding: EdgeInsets.only(bottom: 5),
                   child: GridView.builder(
-                    itemCount: _eventList.length,
+                    itemCount: eventList.length,
                     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 2,
                       childAspectRatio: 1.39,
@@ -211,7 +197,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       mainAxisSpacing: 5,
                     ),
                     itemBuilder: (ctx, index) {
-                      return EventBuilder(_eventList, index);
+                      return EventBuilder(eventList, index, eventName);
                     },
                   ),
                 ),

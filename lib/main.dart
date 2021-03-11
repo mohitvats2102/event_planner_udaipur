@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:page_transition/page_transition.dart';
 
+import './screens/event_venues_list.dart';
 import 'screens/login_screen.dart';
 
 void main() async {
@@ -48,6 +49,14 @@ class MyApp extends StatelessWidget {
               child: LoginScreen(),
               curve: Curves.linear,
               type: PageTransitionType.topToBottom,
+            );
+            break;
+          case VenueList.venueScreen:
+            return PageTransition(
+              settings: settings,
+              child: VenueList(),
+              curve: Curves.linear,
+              type: PageTransitionType.rightToLeft,
             );
             break;
           default:
