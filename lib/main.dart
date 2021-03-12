@@ -7,6 +7,7 @@ import 'package:page_transition/page_transition.dart';
 
 import './screens/event_venues_list.dart';
 import './screens/venue_detail_screen.dart';
+import 'screens/confirm_booking_screen.dart';
 import 'screens/login_screen.dart';
 
 void main() async {
@@ -64,6 +65,14 @@ class MyApp extends StatelessWidget {
             return PageTransition(
               settings: settings,
               child: VenueDetailScreen(),
+              curve: Curves.linear,
+              type: PageTransitionType.rightToLeft,
+            );
+            break;
+          case ConfirmBooking.confirmBookingScreen:
+            return PageTransition(
+              settings: settings,
+              child: ConfirmBooking(),
               curve: Curves.linear,
               type: PageTransitionType.rightToLeft,
             );

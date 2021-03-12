@@ -1,9 +1,19 @@
 import 'package:event_planner_udaipur/constant.dart';
+import 'package:event_planner_udaipur/screens/confirm_booking_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class VenueDetailScreen extends StatelessWidget {
   static const String venueDetailScreen = '/venue_detail_screen';
+
+  void customLaunch(command) async {
+    if (await canLaunch(command)) {
+      await launch(command);
+    } else {
+      print('can\'t make call');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +28,9 @@ class VenueDetailScreen extends StatelessWidget {
               Icons.call,
               size: 30,
             ),
-            onPressed: () {},
+            onPressed: () {
+              customLaunch('tel:+91 7250069394');
+            },
             padding: EdgeInsets.only(right: 20),
           ),
         ],
@@ -183,7 +195,10 @@ class VenueDetailScreen extends StatelessWidget {
               padding: EdgeInsets.all(10),
               color: _themeCtx.accentColor,
               textColor: _themeCtx.primaryColor,
-              onPressed: () {},
+              onPressed: () {
+                Navigator.pushNamed(
+                    context, ConfirmBooking.confirmBookingScreen);
+              },
               icon: Icon(Icons.calendar_today),
               label: Text(
                 'Schedule Booking',
