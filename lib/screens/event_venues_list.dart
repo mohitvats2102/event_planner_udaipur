@@ -1,6 +1,7 @@
 import 'package:event_planner_udaipur/constant.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+
+import '../screens/venue_detail_screen.dart';
 
 class VenueList extends StatelessWidget {
   static const String venueScreen = '/venue_screen';
@@ -107,15 +108,18 @@ class VenueList extends StatelessWidget {
                               child: Column(
                                 children: [
                                   Container(
-                                    child: ClipRRect(
-                                      child: Image.network(
-                                        venueImgList1[i],
-                                        fit: BoxFit.fitWidth,
+                                    child: Hero(
+                                      child: ClipRRect(
+                                        child: Image.network(
+                                          venueImgList1[i],
+                                          fit: BoxFit.fitWidth,
+                                        ),
+                                        borderRadius: BorderRadius.only(
+                                          topLeft: Radius.circular(15),
+                                          topRight: Radius.circular(15),
+                                        ),
                                       ),
-                                      borderRadius: BorderRadius.only(
-                                        topLeft: Radius.circular(15),
-                                        topRight: Radius.circular(15),
-                                      ),
+                                      tag: venueImgList1[i],
                                     ),
                                     width: double.infinity,
                                     height: 200,
@@ -144,7 +148,12 @@ class VenueList extends StatelessWidget {
                                           elevation: 0,
                                           textColor: themeCtx.accentColor,
                                           color: themeCtx.primaryColor,
-                                          onPressed: () {},
+                                          onPressed: () {
+                                            Navigator.of(context).pushNamed(
+                                                VenueDetailScreen
+                                                    .venueDetailScreen,
+                                                arguments: i);
+                                          },
                                           label: Text(
                                             'View Details',
                                             style: TextStyle(
