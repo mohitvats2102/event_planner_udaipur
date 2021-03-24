@@ -1,18 +1,22 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 import '../screens/event_venues_list.dart';
 
 class EventBuilder extends StatelessWidget {
-  final List<String> _eventList;
-  final List<String> _eventName;
+  final List<QueryDocumentSnapshot> _eventList;
+  //final List<String> _eventName;
   final int index;
-  EventBuilder(this._eventList, this.index, this._eventName);
+  EventBuilder(
+    this._eventList,
+    this.index,
+  );
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
         Navigator.of(context).pushNamed(VenueList.venueScreen,
-            arguments: [_eventName[index], index]);
+            arguments: [_eventList[index].id, index]);
       },
       child: Card(
         shape: RoundedRectangleBorder(
@@ -36,7 +40,7 @@ class EventBuilder extends StatelessWidget {
             ),
             child: FittedBox(
               child: Text(
-                _eventName[index],
+                _eventList[index].id,
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 18,
@@ -53,7 +57,7 @@ class EventBuilder extends StatelessWidget {
                 fit: BoxFit.fill,
                 placeholder: AssetImage('assets/images/fade.png'),
                 image: NetworkImage(
-                  _eventList[index],
+                  _eventList[index].data()['image'],
                 ),
               ),
             ),

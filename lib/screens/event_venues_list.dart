@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:event_planner_udaipur/constant.dart';
 import 'package:flutter/material.dart';
 
@@ -5,6 +6,7 @@ import '../screens/venue_detail_screen.dart';
 
 class VenueList extends StatelessWidget {
   static const String venueScreen = '/venue_screen';
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   @override
   Widget build(BuildContext context) {
     Size _deviceSize = MediaQuery.of(context).size;
@@ -90,89 +92,117 @@ class VenueList extends StatelessWidget {
                         ),
                       ),
                     ),
-                    Expanded(
-                      child: Container(
-                        child: ListView.builder(
-                          itemCount: venueImgList1.length,
-                          itemBuilder: (ctx, i) {
-                            return Card(
-                              margin: EdgeInsets.symmetric(
-                                  vertical: 10, horizontal: 10),
-                              elevation: 30,
-                              color: themeCtx.primaryColor,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(
-                                  15,
-                                ),
-                              ),
-                              child: Column(
-                                children: [
-                                  Container(
-                                    child: Hero(
-                                      child: ClipRRect(
-                                        child: Image.network(
-                                          venueImgList1[i],
-                                          fit: BoxFit.fitWidth,
-                                        ),
-                                        borderRadius: BorderRadius.only(
-                                          topLeft: Radius.circular(15),
-                                          topRight: Radius.circular(15),
+                    FutureBuilder<QuerySnapshot>(
+                      future:
+                          _firestore.collection('venues').orderBy('name').get(),
+                      builder: (ctx, asynSnapshot) {
+                        if (asynSnapshot.connectionState ==
+                            ConnectionState.done) {
+                          if (asynSnapshot.hasData) {
+                            List<QueryDocumentSnapshot> venuesList =
+                                asynSnapshot.data.docs;
+
+                            return Expanded(
+                              child: Container(
+                                child: ListView.builder(
+                                  itemCount: venuesList.length,
+                                  itemBuilder: (ctx, i) {
+                                    return Card(
+                                      margin: EdgeInsets.symmetric(
+                                          vertical: 10, horizontal: 10),
+                                      elevation: 30,
+                                      color: themeCtx.primaryColor,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(
+                                          15,
                                         ),
                                       ),
-                                      tag: venueImgList1[i],
-                                    ),
-                                    width: double.infinity,
-                                    height: 200,
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.only(
-                                      right: 10,
-                                      left: 10,
-                                    ),
-                                    child: Row(
-                                      children: [
-                                        Container(
-                                          child: FittedBox(
-                                            child: Text(
-                                              venueImgName1[i],
-                                              style: TextStyle(
-                                                fontSize: 18,
-                                                fontWeight: FontWeight.bold,
-                                                color: themeCtx.accentColor,
+                                      child: Column(
+                                        children: [
+                                          Container(
+                                            child: Hero(
+                                              child: ClipRRect(
+                                                child: Image.network(
+                                                  venuesList[i].data()['image'],
+                                                  fit: BoxFit.fitWidth,
+                                                ),
+                                                borderRadius: BorderRadius.only(
+                                                  topLeft: Radius.circular(15),
+                                                  topRight: Radius.circular(15),
+                                                ),
                                               ),
+                                              tag:
+                                                  venuesList[i].data()['image'],
+                                            ),
+                                            width: double.infinity,
+                                            height: 200,
+                                          ),
+                                          Padding(
+                                            padding: const EdgeInsets.only(
+                                              right: 10,
+                                              left: 10,
+                                            ),
+                                            child: Row(
+                                              children: [
+                                                Container(
+                                                  child: FittedBox(
+                                                    child: Text(
+                                                      venuesList[i]
+                                                          .data()['name'],
+                                                      style: TextStyle(
+                                                        fontSize: 18,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        color: themeCtx
+                                                            .accentColor,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  width:
+                                                      _deviceSize.width * 0.41,
+                                                ),
+                                                RaisedButton.icon(
+                                                  elevation: 0,
+                                                  textColor:
+                                                      themeCtx.accentColor,
+                                                  color: themeCtx.primaryColor,
+                                                  onPressed: () {
+                                                    Navigator.of(context)
+                                                        .pushNamed(
+                                                            VenueDetailScreen
+                                                                .venueDetailScreen,
+                                                            arguments: i);
+                                                  },
+                                                  label: Text(
+                                                    'View Details',
+                                                    style: TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    ),
+                                                  ),
+                                                  icon:
+                                                      Icon(Icons.arrow_forward),
+                                                )
+                                              ],
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
                                             ),
                                           ),
-                                          width: _deviceSize.width * 0.41,
-                                        ),
-                                        RaisedButton.icon(
-                                          elevation: 0,
-                                          textColor: themeCtx.accentColor,
-                                          color: themeCtx.primaryColor,
-                                          onPressed: () {
-                                            Navigator.of(context).pushNamed(
-                                                VenueDetailScreen
-                                                    .venueDetailScreen,
-                                                arguments: i);
-                                          },
-                                          label: Text(
-                                            'View Details',
-                                            style: TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                          icon: Icon(Icons.arrow_forward),
-                                        )
-                                      ],
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                    ),
-                                  ),
-                                ],
+                                        ],
+                                      ),
+                                    );
+                                  },
+                                ),
                               ),
                             );
-                          },
-                        ),
-                      ),
+                          }
+                        }
+
+                        return Center(
+                          child: CircularProgressIndicator(),
+                        );
+                      },
                     ),
                   ],
                 ),

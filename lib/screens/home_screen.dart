@@ -1,8 +1,10 @@
 import 'package:carousel_slider/carousel_slider.dart';
-import 'package:event_planner_udaipur/constant.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:event_planner_udaipur/providers/events.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:provider/provider.dart';
 
 import '../widgets/event_builder.dart';
 import 'login_screen.dart';
@@ -15,8 +17,9 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  bool _isLoadingDone = false;
   final FirebaseAuth _auth = FirebaseAuth.instance;
-
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   void logout(BuildContext context) async {
     if (_auth.currentUser.providerData != null) {
       if (_auth.currentUser.providerData[0].providerId == 'google.com') {
@@ -29,13 +32,26 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   int _currentIndex = 0;
-  int _currentName = 0;
 
-  List<T> map<T>(List list, Function handler) {
-    List<T> result = [];
-    for (int i = 0; i < list.length; i++) result.add(handler(i, list[i]));
+  List<QueryDocumentSnapshot> venueDoc;
 
-    return result;
+  // List<T> map<T>(List list, Function handler) {
+  //   List<T> result = [];
+  //   for (int i = 0; i < list.length; i++) result.add(handler(i, list[i]));
+  //
+  //   return result;
+  // }
+
+  @override
+  void didChangeDependencies() async {
+    // TODO: implement didChangeDependencies
+    super.didChangeDependencies();
+    QuerySnapshot _collectionSnap =
+        await _firestore.collection('trendingvenues').get();
+    venueDoc = _collectionSnap.docs;
+    setState(() {
+      _isLoadingDone = true;
+    });
   }
 
   @override
@@ -64,148 +80,181 @@ class _HomeScreenState extends State<HomeScreen> {
           style: TextStyle(color: Theme.of(context).accentColor),
         ),
       ),
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.only(
-            left: 10,
-            right: 10,
-            top: 5,
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SizedBox(height: 10),
-              Text(
-                'Trending Venues',
-                style: TextStyle(
-                  fontSize: 25,
-                  fontWeight: FontWeight.w500,
-                  color: Theme.of(context).accentColor,
+      body: _isLoadingDone
+          ? SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.only(
+                  left: 10,
+                  right: 10,
+                  top: 5,
                 ),
-              ),
-              Container(
                 child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    CarouselSlider(
-                      items: venueImgList.map(
-                        (imgUrl) {
-                          return Padding(
-                            padding: const EdgeInsets.only(top: 15),
-                            child: Stack(
-                              children: [
-                                Container(
-                                  width: MediaQuery.of(context).size.width,
-                                  height: 230,
-                                  child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(15),
-                                    child: Image.network(
-                                      imgUrl,
-                                      fit: BoxFit.fill,
+                    SizedBox(height: 10),
+                    Text(
+                      'Trending Venues',
+                      style: TextStyle(
+                        fontSize: 25,
+                        fontWeight: FontWeight.w500,
+                        color: Theme.of(context).accentColor,
+                      ),
+                    ),
+                    Container(
+                      child: Consumer<EventsData>(builder: (ctx, event, child) {
+                        return Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            CarouselSlider(
+                              items: venueDoc.map(
+                                (docSnap) {
+                                  return Padding(
+                                    padding: const EdgeInsets.only(top: 15),
+                                    child: Stack(
+                                      children: [
+                                        Container(
+                                          width:
+                                              MediaQuery.of(context).size.width,
+                                          height: 230,
+                                          child: ClipRRect(
+                                            borderRadius:
+                                                BorderRadius.circular(15),
+                                            child: Image.network(
+                                              docSnap.data()['image'],
+                                              fit: BoxFit.fill,
+                                            ),
+                                          ),
+                                        ),
+                                        Positioned(
+                                          right: 60,
+                                          bottom: 0,
+                                          child: Container(
+                                            decoration: BoxDecoration(
+                                              color:
+                                                  Colors.black.withOpacity(0.4),
+                                            ),
+                                            padding: EdgeInsets.all(5),
+                                            width: 200,
+                                            child: Text(
+                                              docSnap.data()['name'],
+                                              style: TextStyle(
+                                                fontSize: 20,
+                                                fontWeight: FontWeight.bold,
+                                                color: Colors.white,
+                                              ),
+                                              overflow: TextOverflow.fade,
+                                              softWrap: true,
+                                            ),
+                                            alignment: Alignment.center,
+                                          ),
+                                        ),
+                                      ],
                                     ),
-                                  ),
-                                ),
-                                Positioned(
-                                  right: 60,
-                                  bottom: 0,
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      color: Colors.black.withOpacity(0.4),
-                                    ),
-                                    padding: EdgeInsets.all(5),
-                                    width: 200,
-                                    child: Text(
-                                      venueImgName[_currentName],
-                                      style: TextStyle(
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.white,
-                                      ),
-                                      overflow: TextOverflow.fade,
-                                      softWrap: true,
-                                    ),
-                                    alignment: Alignment.center,
-                                  ),
-                                ),
-                              ],
+                                  );
+                                },
+                              ).toList(),
+                              options: CarouselOptions(
+                                autoPlayInterval: Duration(seconds: 3),
+                                onPageChanged: (index, _) {
+                                  //print('OUTPUT :- $index');
+                                  // setState(() {
+                                  //   _currentIndex = index;
+                                  // });
+                                  event.updateCarousel(_currentIndex, index);
+                                },
+                                initialPage: 0,
+                                enlargeCenterPage: true,
+                                height: 230,
+                                autoPlay: true,
+                              ),
                             ),
-                          );
-                        },
-                      ).toList(),
-                      options: CarouselOptions(
-                        autoPlayInterval: Duration(seconds: 3),
-                        onPageChanged: (index, _) {
-                          //print('OUTPUT :- $index');
-                          setState(() {
-                            _currentIndex = index;
-                            _currentName = index;
-                          });
-                        },
-                        initialPage: 0,
-                        enlargeCenterPage: true,
-                        height: 230,
-                        autoPlay: true,
+                            SizedBox(height: 20),
+                            // Row(
+                            //   mainAxisAlignment: MainAxisAlignment.center,
+                            //   children: map(
+                            //     venueDoc,
+                            //     (index, url) {
+                            //       return Container(
+                            //         height: 5,
+                            //         width: 5,
+                            //         margin: EdgeInsets.symmetric(
+                            //           horizontal: 2,
+                            //           vertical: 10,
+                            //         ),
+                            //         decoration: BoxDecoration(
+                            //           shape: BoxShape.circle,
+                            //           color: _currentIndex == index
+                            //               ? Color(0xFFFF8038)
+                            //               : Color(0xFFFFFFFF),
+                            //         ),
+                            //       );
+                            //     },
+                            //   ),
+                            // ),
+                          ],
+                        );
+                      }),
+                    ),
+                    SizedBox(height: 20),
+                    Text(
+                      'Choose Your Event',
+                      style: TextStyle(
+                        fontSize: 25,
+                        fontWeight: FontWeight.w500,
+                        color: Theme.of(context).accentColor,
                       ),
                     ),
                     SizedBox(height: 20),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: map(
-                        venueImgList,
-                        (index, url) {
-                          return Container(
-                            height: 5,
-                            width: 5,
-                            margin: EdgeInsets.symmetric(
-                              horizontal: 2,
-                              vertical: 10,
-                            ),
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: _currentIndex == index
-                                  ? Color(0xFFFF8038)
-                                  : Color(0xFFFFFFFF),
-                            ),
-                          );
-                        },
-                      ),
-                    ),
+                    GridOfEvents(_firestore),
                   ],
                 ),
               ),
-              SizedBox(height: 20),
-              Text(
-                'Choose Your Event',
-                style: TextStyle(
-                  fontSize: 25,
-                  fontWeight: FontWeight.w500,
-                  color: Theme.of(context).accentColor,
-                ),
-              ),
-              SizedBox(height: 20),
-              Expanded(
-                child: Container(
-                  padding: EdgeInsets.only(bottom: 5),
-                  child: GridView.builder(
-                    itemCount: eventList.length,
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      childAspectRatio: 1.39,
-                      crossAxisSpacing: 5,
-                      mainAxisSpacing: 5,
-                    ),
-                    itemBuilder: (ctx, index) {
-                      return EventBuilder(eventList, index, eventName);
-                    },
+            )
+          : Center(
+              child: CircularProgressIndicator(),
+            ),
+    );
+  }
+}
+
+class GridOfEvents extends StatelessWidget {
+  final FirebaseFirestore _firestore;
+
+  GridOfEvents(this._firestore);
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<QuerySnapshot>(
+      future: _firestore.collection('events').get(),
+      builder: (ctx, asyncSnapshot) {
+        if (asyncSnapshot.connectionState == ConnectionState.done) {
+          if (asyncSnapshot.hasData) {
+            List<QueryDocumentSnapshot> eventList = asyncSnapshot.data.docs;
+            return Expanded(
+              child: Container(
+                padding: EdgeInsets.only(bottom: 5),
+                child: GridView.builder(
+                  itemCount: eventList.length,
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    childAspectRatio: 1.39,
+                    crossAxisSpacing: 5,
+                    mainAxisSpacing: 5,
                   ),
+                  itemBuilder: (ctx, index) {
+                    return EventBuilder(eventList, index);
+                  },
                 ),
               ),
-            ],
-          ),
-        ),
-      ),
+            );
+          }
+        }
+        return Center(
+          child: CircularProgressIndicator(),
+        );
+      },
     );
   }
 }
