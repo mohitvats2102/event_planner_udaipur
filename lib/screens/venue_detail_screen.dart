@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:event_planner_udaipur/constant.dart';
 import 'package:event_planner_udaipur/screens/confirm_booking_screen.dart';
 import 'package:flutter/material.dart';
@@ -19,7 +20,13 @@ class VenueDetailScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     ThemeData _themeCtx = Theme.of(context);
     Size _deviceSize = MediaQuery.of(context).size;
-    int _index = ModalRoute.of(context).settings.arguments as int;
+    List<dynamic> _dataFromPreviousScreen =
+        ModalRoute.of(context).settings.arguments as List<dynamic>;
+    int _index = _dataFromPreviousScreen[0];
+    QueryDocumentSnapshot _doc = _dataFromPreviousScreen[1];
+
+    // print(_index);
+    // print(_doc.data());
     return Scaffold(
       appBar: AppBar(
         actions: [
@@ -40,7 +47,7 @@ class VenueDetailScreen extends StatelessWidget {
           ),
         ),
         title: Text(
-          venueImgName1[_index],
+          _doc.data()['name'],
           style: TextStyle(
             color: Color(
               0xFFFF8038,
@@ -55,22 +62,22 @@ class VenueDetailScreen extends StatelessWidget {
         children: [
           Container(
             width: double.infinity,
-            height: _deviceSize.height * 0.30,
+            height: _deviceSize.height * 0.27,
             child: Hero(
-              tag: venueImgList1[_index],
+              tag: _doc.data()['image'],
               child: ClipRRect(
                 borderRadius: BorderRadius.only(
                   topRight: Radius.circular(20),
                   topLeft: Radius.circular(20),
                 ),
                 child: Image.network(
-                  venueImgList1[_index],
+                  _doc.data()['image'],
                   fit: BoxFit.fill,
                 ),
               ),
             ),
           ),
-          SizedBox(height: 10),
+          SizedBox(height: 5),
           Center(
             child: Text(
               'More Views',
@@ -81,7 +88,7 @@ class VenueDetailScreen extends StatelessWidget {
               ),
             ),
           ),
-          SizedBox(height: 10),
+          SizedBox(height: 5),
           Container(
             width: double.infinity,
             height: 100,
@@ -106,7 +113,7 @@ class VenueDetailScreen extends StatelessWidget {
               ).toList(),
             ),
           ),
-          SizedBox(height: 20),
+          SizedBox(height: 10),
           Expanded(
             child: Card(
               //margin: EdgeInsets.symmetric(horizontal: 10),
@@ -118,18 +125,18 @@ class VenueDetailScreen extends StatelessWidget {
               //color: Colors.white,
               child: Container(
                 padding: EdgeInsets.only(
-                  left: 20,
-                  top: 20,
-                  right: 20,
+                  left: 10,
+                  top: 10,
+                  right: 10,
                 ),
                 height: _deviceSize.height * 0.4,
                 width: double.infinity,
                 child: ListView(
                   children: [
                     Text(
-                      'Available Rooms : 10',
+                      'Available Rooms : ${_doc.data()['rooms'].toString()}',
                       style: TextStyle(
-                        fontSize: 25,
+                        fontSize: 18,
                         fontWeight: FontWeight.bold,
                         color: _themeCtx.primaryColor,
                       ),
@@ -142,9 +149,9 @@ class VenueDetailScreen extends StatelessWidget {
                     ),
                     SizedBox(height: 10),
                     Text(
-                      'Ratings : ⭐⭐⭐⭐⭐',
+                      'Ratings : ${_doc.data()['rating'].toString()} ⭐',
                       style: TextStyle(
-                        fontSize: 25,
+                        fontSize: 18,
                         fontWeight: FontWeight.bold,
                         color: _themeCtx.primaryColor,
                       ),
@@ -157,9 +164,9 @@ class VenueDetailScreen extends StatelessWidget {
                     ),
                     SizedBox(height: 10),
                     Text(
-                      'Address : NSCB Hostel Third Year CTAE Udaipur',
+                      'Address : ${_doc.data()['address']}',
                       style: TextStyle(
-                        fontSize: 25,
+                        fontSize: 18,
                         fontWeight: FontWeight.bold,
                         color: _themeCtx.primaryColor,
                       ),
@@ -172,9 +179,9 @@ class VenueDetailScreen extends StatelessWidget {
                     ),
                     SizedBox(height: 10),
                     Text(
-                      'Description : All Facilities Available alongwith Catering,AC/NON-AC Rooms',
+                      'Description : ${_doc.data()['description']}',
                       style: TextStyle(
-                        fontSize: 25,
+                        fontSize: 18,
                         fontWeight: FontWeight.bold,
                         color: _themeCtx.primaryColor,
                       ),
@@ -185,7 +192,7 @@ class VenueDetailScreen extends StatelessWidget {
               ),
             ),
           ),
-          SizedBox(height: 10),
+          SizedBox(height: 5),
           Padding(
             padding: const EdgeInsets.only(bottom: 10, right: 10, left: 10),
             child: RaisedButton.icon(
@@ -203,7 +210,7 @@ class VenueDetailScreen extends StatelessWidget {
               label: Text(
                 'Schedule Booking',
                 style: TextStyle(
-                  fontSize: 20,
+                  fontSize: 18,
                   fontWeight: FontWeight.bold,
                 ),
               ),

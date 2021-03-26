@@ -102,6 +102,10 @@ class VenueList extends StatelessWidget {
                             List<QueryDocumentSnapshot> venuesList =
                                 asynSnapshot.data.docs;
 
+                            // for (int i = 0; i < venuesList.length; i++) {
+                            //   print(venuesList[i].data());
+                            // }
+
                             return Expanded(
                               child: Container(
                                 child: ListView.builder(
@@ -169,9 +173,13 @@ class VenueList extends StatelessWidget {
                                                   onPressed: () {
                                                     Navigator.of(context)
                                                         .pushNamed(
-                                                            VenueDetailScreen
-                                                                .venueDetailScreen,
-                                                            arguments: i);
+                                                      VenueDetailScreen
+                                                          .venueDetailScreen,
+                                                      arguments: [
+                                                        i,
+                                                        venuesList[i]
+                                                      ],
+                                                    );
                                                   },
                                                   label: Text(
                                                     'View Details',
@@ -198,7 +206,6 @@ class VenueList extends StatelessWidget {
                             );
                           }
                         }
-
                         return Center(
                           child: CircularProgressIndicator(),
                         );

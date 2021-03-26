@@ -7,6 +7,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:provider/provider.dart';
 
 import '../widgets/event_builder.dart';
+import '../widgets/main_drawer.dart';
 import 'login_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -20,6 +21,8 @@ class _HomeScreenState extends State<HomeScreen> {
   bool _isLoadingDone = false;
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  String _userImageUrl = '';
+  String _userName = '';
   void logout(BuildContext context) async {
     if (_auth.currentUser.providerData != null) {
       if (_auth.currentUser.providerData[0].providerId == 'google.com') {
@@ -56,9 +59,16 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    _userImageUrl = _auth.currentUser.photoURL ?? '';
+    _userName = _auth.currentUser.displayName ?? '';
     return Scaffold(
       backgroundColor: Color(0xFF033249),
-      drawer: Drawer(),
+      drawer: MainDrawer(
+        userName: _userName,
+        imageUrl: _userImageUrl,
+        logoutFun: logout,
+        ctx: context,
+      ),
       appBar: AppBar(
         iconTheme: IconThemeData(
           color: Color(
