@@ -23,7 +23,8 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      builder: (ctx) => EventsData(),
+      create: (ctx) => EventsData(),
+      // builder: (ctx) => EventsData(),
       child: MaterialApp(
         title: 'Event Planner',
         debugShowCheckedModeBanner: false,

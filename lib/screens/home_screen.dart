@@ -112,100 +112,103 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ),
                     Container(
-                      child: Consumer<EventsData>(builder: (ctx, event, child) {
-                        return Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            CarouselSlider(
-                              items: venueDoc.map(
-                                (docSnap) {
-                                  return Padding(
-                                    padding: const EdgeInsets.only(top: 15),
-                                    child: Stack(
-                                      children: [
-                                        Container(
-                                          width:
-                                              MediaQuery.of(context).size.width,
-                                          height: 230,
-                                          child: ClipRRect(
-                                            borderRadius:
-                                                BorderRadius.circular(15),
-                                            child: Image.network(
-                                              docSnap.data()['image'],
-                                              fit: BoxFit.fill,
-                                            ),
-                                          ),
-                                        ),
-                                        Positioned(
-                                          right: 60,
-                                          bottom: 0,
-                                          child: Container(
-                                            decoration: BoxDecoration(
-                                              color:
-                                                  Colors.black.withOpacity(0.4),
-                                            ),
-                                            padding: EdgeInsets.all(5),
-                                            width: 200,
-                                            child: Text(
-                                              docSnap.data()['name'],
-                                              style: TextStyle(
-                                                fontSize: 20,
-                                                fontWeight: FontWeight.bold,
-                                                color: Colors.white,
+                      child: Consumer<EventsData>(
+                        builder: (ctx, event, child) {
+                          return Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              CarouselSlider(
+                                items: venueDoc.map(
+                                  (docSnap) {
+                                    return Padding(
+                                      padding: const EdgeInsets.only(top: 15),
+                                      child: Stack(
+                                        children: [
+                                          Container(
+                                            width: MediaQuery.of(context)
+                                                .size
+                                                .width,
+                                            height: 230,
+                                            child: ClipRRect(
+                                              borderRadius:
+                                                  BorderRadius.circular(15),
+                                              child: Image.network(
+                                                docSnap.data()['image'],
+                                                fit: BoxFit.fill,
                                               ),
-                                              overflow: TextOverflow.fade,
-                                              softWrap: true,
                                             ),
-                                            alignment: Alignment.center,
                                           ),
-                                        ),
-                                      ],
-                                    ),
-                                  );
-                                },
-                              ).toList(),
-                              options: CarouselOptions(
-                                autoPlayInterval: Duration(seconds: 3),
-                                onPageChanged: (index, _) {
-                                  //print('OUTPUT :- $index');
-                                  // setState(() {
-                                  //   _currentIndex = index;
-                                  // });
-                                  event.updateCarousel(_currentIndex, index);
-                                },
-                                initialPage: 0,
-                                enlargeCenterPage: true,
-                                height: 230,
-                                autoPlay: true,
+                                          Positioned(
+                                            right: 60,
+                                            bottom: 0,
+                                            child: Container(
+                                              decoration: BoxDecoration(
+                                                color: Colors.black
+                                                    .withOpacity(0.4),
+                                              ),
+                                              padding: EdgeInsets.all(5),
+                                              width: 200,
+                                              child: Text(
+                                                docSnap.data()['name'],
+                                                style: TextStyle(
+                                                  fontSize: 20,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: Colors.white,
+                                                ),
+                                                overflow: TextOverflow.fade,
+                                                softWrap: true,
+                                              ),
+                                              alignment: Alignment.center,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                  },
+                                ).toList(),
+                                options: CarouselOptions(
+                                  autoPlayInterval: Duration(seconds: 3),
+                                  onPageChanged: (index, _) {
+                                    //print('OUTPUT :- $index');
+                                    // setState(() {
+                                    //   _currentIndex = index;
+                                    // });
+                                    event.updateCarousel(_currentIndex, index);
+                                  },
+                                  initialPage: 0,
+                                  enlargeCenterPage: true,
+                                  height: 230,
+                                  autoPlay: true,
+                                ),
                               ),
-                            ),
-                            SizedBox(height: 20),
-                            // Row(
-                            //   mainAxisAlignment: MainAxisAlignment.center,
-                            //   children: map(
-                            //     venueDoc,
-                            //     (index, url) {
-                            //       return Container(
-                            //         height: 5,
-                            //         width: 5,
-                            //         margin: EdgeInsets.symmetric(
-                            //           horizontal: 2,
-                            //           vertical: 10,
-                            //         ),
-                            //         decoration: BoxDecoration(
-                            //           shape: BoxShape.circle,
-                            //           color: _currentIndex == index
-                            //               ? Color(0xFFFF8038)
-                            //               : Color(0xFFFFFFFF),
-                            //         ),
-                            //       );
-                            //     },
-                            //   ),
-                            // ),
-                          ],
-                        );
-                      }),
+                              SizedBox(height: 20),
+                              // Row(
+                              //   mainAxisAlignment: MainAxisAlignment.center,
+                              //   children: map(
+                              //     venueDoc,
+                              //     (index, url) {
+                              //       return Container(
+                              //         height: 5,
+                              //         width: 5,
+                              //         margin: EdgeInsets.symmetric(
+                              //           horizontal: 2,
+                              //           vertical: 10,
+                              //         ),
+                              //         decoration: BoxDecoration(
+                              //           shape: BoxShape.circle,
+                              //           color: _currentIndex == index
+                              //               ? Color(0xFFFF8038)
+                              //               : Color(0xFFFFFFFF),
+                              //         ),
+                              //       );
+                              //     },
+                              //   ),
+                              // ),
+                            ],
+                          );
+                        },
+                      ),
                     ),
                     SizedBox(height: 20),
                     Text(
@@ -244,7 +247,6 @@ class GridOfEvents extends StatelessWidget {
             List<QueryDocumentSnapshot> eventList = asyncSnapshot.data.docs;
             return Expanded(
               child: Container(
-                padding: EdgeInsets.only(bottom: 5),
                 child: GridView.builder(
                   itemCount: eventList.length,
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -268,3 +270,21 @@ class GridOfEvents extends StatelessWidget {
     );
   }
 }
+
+// Expanded(
+// child: Container(
+// padding: EdgeInsets.only(bottom: 5),
+// child: GridView.builder(
+// itemCount: eventList.length,
+// gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+// crossAxisCount: 2,
+// childAspectRatio: 1.39,
+// crossAxisSpacing: 5,
+// mainAxisSpacing: 5,
+// ),
+// itemBuilder: (ctx, index) {
+// return EventBuilder(eventList, index);
+// },
+// ),
+// ),
+// );

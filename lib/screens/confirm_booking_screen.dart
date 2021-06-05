@@ -165,6 +165,7 @@ class _ConfirmBookingState extends State<ConfirmBooking> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     crossAxisAlignment: CrossAxisAlignment.baseline,
+                    textBaseline: TextBaseline.alphabetic,
                     children: [
                       Expanded(
                         child: FittedBox(
@@ -259,10 +260,11 @@ class _ConfirmBookingState extends State<ConfirmBooking> {
                           });
                           return showDialog(
                             context: context,
-                            child: AlertDialog(
+                            builder: (ctx) => AlertDialog(
                               title: Text('Your Booking is Confirmed'),
                               actions: [
-                                FlatButton(
+                                //TextButton in place of FlatButton
+                                TextButton(
                                   child: Text('Close'),
                                   onPressed: () {
                                     Navigator.pop(context);
