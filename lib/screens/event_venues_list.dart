@@ -124,7 +124,13 @@ class _VenueListState extends State<VenueList> {
                     _isVenueArrayEmpty != null
                         ? _isVenueArrayEmpty
                             ? Center(
-                                child: Text('Coming Soon...'),
+                                child: Text(
+                                  'Coming Soon...',
+                                  style: TextStyle(
+                                      color: Color(0xFFFF8038),
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold),
+                                ),
                               )
                             : FutureBuilder<QuerySnapshot>(
                                 future: _firestore
@@ -138,7 +144,7 @@ class _VenueListState extends State<VenueList> {
                                       List<QueryDocumentSnapshot> venuesList =
                                           asynSnapshot.data.docs.where((docId) {
                                         return _venueArray.contains(docId.id);
-                                      });
+                                      }).toList();
 
                                       return Expanded(
                                         child: Container(
@@ -229,7 +235,8 @@ class _VenueListState extends State<VenueList> {
                                                                 arguments: [
                                                                   i,
                                                                   venuesList[i],
-                                                                  venuesList[i].id,
+                                                                  venuesList[i]
+                                                                      .id,
                                                                 ],
                                                               );
                                                             },
@@ -265,7 +272,9 @@ class _VenueListState extends State<VenueList> {
                                 },
                               )
                         : Center(
-                            child: CircularProgressIndicator(),
+                            child: CircularProgressIndicator(
+                              color: Color(0xFFFF8038),
+                            ),
                           ),
                   ],
                 ),

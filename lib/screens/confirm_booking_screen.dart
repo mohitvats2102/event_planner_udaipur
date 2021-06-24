@@ -29,6 +29,7 @@ class _ConfirmBookingState extends State<ConfirmBooking> {
   bool isSlotPicked = false;
 
   void _trySavingForm() async {
+    print('IN THE HOME');
     if (_startingDate == null ||
         _endingDate == null ||
         _startTime == null ||
@@ -89,6 +90,10 @@ class _ConfirmBookingState extends State<ConfirmBooking> {
 
   Future<void> _tryConfirmBooking() async {
     String bookingDocId;
+    DocumentSnapshot _userDocSnap =
+        await _firestore.collection('users').doc(_auth.currentUser.uid).get();
+    DocumentSnapshot _bookedVenueData =
+        await _firestore.collection('venues').doc(_venueDocID).get();
     await _firestore.collection('bookings').add({
       'startDate': Timestamp.fromDate(_startingDate),
       'endDate': Timestamp.fromDate(_endingDate),
@@ -100,6 +105,13 @@ class _ConfirmBookingState extends State<ConfirmBooking> {
       'totalAmount': _controller.text.trim() == ''
           ? '0'
           : (int.parse(_controller.text.trim()) * 100).toString(),
+      'status': 'pending',
+      'booker': _userDocSnap.data()['name'],
+      'booker_address': _userDocSnap.data()['address'],
+      'booker_contact': _userDocSnap.data()['contact'],
+      'venue_name': _bookedVenueData.data()['name'],
+      'VP_name': _bookedVenueData.data()['providerName'],
+      'VP_contact': _bookedVenueData.data()['providerContact'],
     }).then((docRef) async {
       bookingDocId = docRef.id;
 
@@ -258,7 +270,7 @@ class _ConfirmBookingState extends State<ConfirmBooking> {
                             child: Text(
                               _endingDate == null
                                   ? 'Choose a Date'
-                                  : DateFormat.yMd().format(_startingDate),
+                                  : DateFormat.yMd().format(_endingDate),
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                               ),
@@ -437,7 +449,7 @@ class _ConfirmBookingState extends State<ConfirmBooking> {
                     padding: EdgeInsets.symmetric(horizontal: 50, vertical: 10),
                     color: Color(0xFFFF8038),
                     textColor: Color(0xFF033428),
-                    onPressed: () {},
+                    onPressed: _trySavingForm,
                     icon: Icon(Icons.calendar_today),
                     label: Text(
                       'Confirm Booking',
