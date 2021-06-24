@@ -1,3 +1,4 @@
+import 'package:event_planner_udaipur/screens/user_bookings.dart';
 import 'package:event_planner_udaipur/screens/user_profile.dart';
 import 'package:flutter/material.dart';
 
@@ -78,6 +79,11 @@ class MainDrawer extends StatelessWidget {
                   arguments: userName);
             },
           ),
+          SizedBox(height: 10),
+          buildListTile('Your Bookings', Icons.book, () {
+            Navigator.of(context).pop();
+            Navigator.of(context).pushNamed(UserBookings.user_booking_route);
+          }),
           SizedBox(height: 10),
           buildListTile(
             'User Privacy Policy',

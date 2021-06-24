@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:event_planner_udaipur/providers/events.dart';
 import 'package:event_planner_udaipur/screens/home_screen.dart';
+import 'package:event_planner_udaipur/screens/user_bookings.dart';
 import 'package:event_planner_udaipur/screens/user_detail_form.dart';
 import 'package:event_planner_udaipur/screens/user_profile.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -120,6 +121,14 @@ class MyApp extends StatelessWidget {
               return PageTransition(
                 settings: settings,
                 child: UserDetailForm(),
+                curve: Curves.linear,
+                type: PageTransitionType.rightToLeft,
+              );
+              break;
+            case UserBookings.user_booking_route:
+              return PageTransition(
+                settings: settings,
+                child: UserBookings(),
                 curve: Curves.linear,
                 type: PageTransitionType.rightToLeft,
               );
