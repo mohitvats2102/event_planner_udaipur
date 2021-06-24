@@ -14,6 +14,7 @@ class VenueList extends StatelessWidget {
     var themeCtx = Theme.of(context);
     String _eventName = _routeArgs[0];
     int _index = _routeArgs[1];
+    String _eventImage = _routeArgs[2];
     return Scaffold(
       backgroundColor: themeCtx.primaryColor,
       body: Padding(
@@ -32,7 +33,7 @@ class VenueList extends StatelessWidget {
               child: Hero(
                 tag: _index,
                 child: Image.network(
-                  eventList[_index],
+                  _eventImage,
                   fit: BoxFit.fill,
                 ),
               ),

@@ -1,12 +1,13 @@
 import 'package:event_planner_udaipur/constant.dart';
+import 'package:event_planner_udaipur/screens/home_screen.dart';
+import 'package:event_planner_udaipur/screens/user_detail_form.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_signin_button/flutter_signin_button.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
 import 'package:shimmer/shimmer.dart';
-
-import 'home_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   static const String loginScreen = '/loginscreen';
@@ -25,11 +26,28 @@ class _LoginScreenState extends State<LoginScreen> {
       _isStartRegister = true;
     });
     try {
-      await signInWithGoogle();
-      setState(() {
-        _isStartRegister = false;
-      });
-      Navigator.pushReplacementNamed(context, HomeScreen.homeScreen);
+      UserCredential _loggedInUser = await signInWithGoogle();
+
+      final String _loggedInUserUID = _loggedInUser.user.uid;
+
+      QuerySnapshot _usersCollection =
+          await FirebaseFirestore.instance.collection('users').get();
+
+      List<QueryDocumentSnapshot> _usersCollectionDOC = _usersCollection.docs;
+
+      bool _doesContain = false;
+
+      for (int i = 0; i < _usersCollectionDOC.length; i++) {
+        if (_usersCollectionDOC[i].id == _loggedInUserUID) {
+          _doesContain = true;
+        }
+      }
+
+      if (_doesContain) {
+        Navigator.of(context).pushReplacementNamed(HomeScreen.homeScreen);
+      } else
+        Navigator.pushReplacementNamed(
+            context, UserDetailForm.workerDetailForm);
     } on NoSuchMethodError catch (e) {
       print('in Catch.....');
       setState(() {
@@ -59,72 +77,12 @@ class _LoginScreenState extends State<LoginScreen> {
     return await _auth.signInWithCredential(credential);
   }
 
-  // Future<void> _tryLoginUser(
-  //     {String email,
-  //     String password,
-  //     String username,
-  //     bool islogin,
-  //     BuildContext ctx}) async {
-  //   UserCredential authUser;
-  //   try {
-  //     if (this.mounted) {
-  //       setState(() {
-  //         _isStartRegister = true;
-  //       });
-  //     }
-  //     if (islogin) {
-  //       authUser = await _auth.signInWithEmailAndPassword(
-  //           email: email, password: password);
-  //       // authUser.user.providerData[1].providerId;
-  //
-  //       Navigator.of(context)
-  //           .pushReplacementNamed(CategoryScreen.categoryScreen);
-  //     } else {
-  //       await _auth.createUserWithEmailAndPassword(
-  //           email: email, password: password);
-  //
-  //       Navigator.of(context)
-  //           .pushReplacementNamed(CategoryScreen.categoryScreen);
-  //     }
-  //   } on PlatformException catch (err) {
-  //     if (this.mounted) {
-  //       setState(() {
-  //         _isStartRegister = false;
-  //       });
-  //     }
-  //     String msg = 'Something went wrong please try again later';
-  //     if (err.message != null) {
-  //       msg = err.message;
-  //     }
-  //     print(err.message);
-  //     Scaffold.of(ctx).showSnackBar(
-  //       SnackBar(
-  //         content: Text(msg),
-  //         backgroundColor: Colors.red,
-  //         duration: Duration(seconds: 2),
-  //       ),
-  //     );
-  //   } catch (err) {
-  //     if (this.mounted) {
-  //       setState(() {
-  //         _isStartRegister = false;
-  //       });
-  //     }
-  //     Scaffold.of(ctx).showSnackBar(
-  //       SnackBar(
-  //         content: Text(err.message),
-  //         backgroundColor: Colors.red,
-  //         duration: Duration(seconds: 2),
-  //       ),
-  //     );
-  //   }
-  // }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Theme.of(context).primaryColor,
       body: ModalProgressHUD(
+        progressIndicator: CircularProgressIndicator(color: Color(0xFFFF8038)),
         inAsyncCall: _isStartRegister,
         child: SafeArea(
           child: Stack(
@@ -141,67 +99,57 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
               Column(
-                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   SizedBox(height: 70),
-                  Row(
-                    children: [
-                      SizedBox(width: 130),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Shimmer.fromColors(
-                            baseColor: Color(0xFFFF8038),
-                            highlightColor: Colors.amber.shade300,
-                            child: Text(
-                              '  Event\nPlanner',
-                              style: kloginText.copyWith(
-                                fontSize: 50,
-                                fontWeight: FontWeight.w700,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                  Expanded(child: Container()),
-                  RaisedButton.icon(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    padding: const EdgeInsets.only(
-                      right: 70,
-                      left: 20,
-                      top: 7,
-                      bottom: 7,
-                    ),
-                    textColor: Color(0xFF033249),
-                    color: Colors.white,
-                    onPressed: () {},
-                    icon: Icon(
-                      Icons.phone,
-                      color: Color(0xFF033249),
-                    ),
-                    label: Text(
-                      'Sign in using phone',
-                      style: TextStyle(fontWeight: FontWeight.w600),
-                    ),
-                    highlightElevation: 15,
-                  ),
-                  SizedBox(height: 20),
                   Shimmer.fromColors(
                     baseColor: Color(0xFFFF8038),
                     highlightColor: Colors.amber.shade300,
                     child: Text(
-                      'Or',
-                      style: TextStyle(
-                          color: Color(0xFFFF8038),
-                          fontWeight: FontWeight.w600,
-                          fontSize: 17),
+                      '  Event\nPlanner',
+                      style: kloginText.copyWith(
+                        fontSize: 50,
+                        fontWeight: FontWeight.w700,
+                      ),
                     ),
                   ),
-                  SizedBox(height: 20),
+                  Expanded(child: Container()),
+                  // RaisedButton.icon(
+                  //   shape: RoundedRectangleBorder(
+                  //     borderRadius: BorderRadius.circular(10),
+                  //   ),
+                  //   padding: const EdgeInsets.only(
+                  //     right: 70,
+                  //     left: 20,
+                  //     top: 7,
+                  //     bottom: 7,
+                  //   ),
+                  //   textColor: Color(0xFF033249),
+                  //   color: Colors.white,
+                  //   onPressed: () {},
+                  //   icon: Icon(
+                  //     Icons.phone,
+                  //     color: Color(0xFF033249),
+                  //   ),
+                  //   label: Text(
+                  //     'Sign in using phone',
+                  //     style: TextStyle(fontWeight: FontWeight.w600),
+                  //   ),
+                  //   highlightElevation: 15,
+                  // ),
+                  // SizedBox(height: 20),
+                  // Shimmer.fromColors(
+                  //   baseColor: Color(0xFFFF8038),
+                  //   highlightColor: Colors.amber.shade300,
+                  //   child: Text(
+                  //     'Or',
+                  //     style: TextStyle(
+                  //         color: Color(0xFFFF8038),
+                  //         fontWeight: FontWeight.w600,
+                  //         fontSize: 17),
+                  //   ),
+                  // ),
+                  // SizedBox(height: 20),
                   SignInButton(
                     Buttons.Google,
                     onPressed: onTapSignInWithGoogle,

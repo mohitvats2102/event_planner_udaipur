@@ -16,7 +16,12 @@ class EventBuilder extends StatelessWidget {
     return GestureDetector(
       onTap: () {
         Navigator.of(context).pushNamed(VenueList.venueScreen,
-            arguments: [_eventList[index].id, index]);
+            //change here
+            arguments: [
+              _eventList[index].data()['name'],
+              index,
+              _eventList[index].data()['image']
+            ]);
       },
       child: Card(
         shape: RoundedRectangleBorder(
@@ -40,7 +45,7 @@ class EventBuilder extends StatelessWidget {
             ),
             child: FittedBox(
               child: Text(
-                _eventList[index].id,
+                _eventList[index].data()['name'],
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 18,

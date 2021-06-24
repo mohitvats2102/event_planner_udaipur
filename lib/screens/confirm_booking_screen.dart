@@ -16,8 +16,10 @@ class _ConfirmBookingState extends State<ConfirmBooking> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   bool _isBookingStart = false;
 
-  DateTime _pickedDate;
-  String _pickedSlots;
+  DateTime _startingDate;
+  DateTime _endingDate;
+  TimeOfDay _startTime;
+  TimeOfDay _endTime;
   String _numberOfPeople;
   String _totalPrice;
   TextEditingController _controller = TextEditingController();
@@ -53,11 +55,10 @@ class _ConfirmBookingState extends State<ConfirmBooking> {
                       Expanded(
                         child: FittedBox(
                           child: Text(
-                            _pickedDate == null
-                                ? 'No Date Choosen'
+                            _startingDate == null
+                                ? 'Choose Starting date'
                                 : 'Edit Choosen Date',
-                            style: TextStyle(
-                                color: Color(0xFFFF8038), fontSize: 22),
+                            style: TextStyle(color: Color(0xFFFF8038)),
                           ),
                         ),
                       ),
@@ -87,22 +88,21 @@ class _ConfirmBookingState extends State<ConfirmBooking> {
                                 firstDate: DateTime.now(),
                                 lastDate: DateTime.now().add(
                                   Duration(
-                                    days: 45,
+                                    days: 3,
                                   ),
                                 ),
                               ).then((value) {
                                 if (value == null) return;
                                 setState(() {
-                                  _pickedDate = value;
+                                  _startingDate = value;
                                 });
                               });
                             },
                             child: Text(
-                              _pickedDate == null
+                              _startingDate == null
                                   ? 'Choose a Date'
-                                  : DateFormat.yMd().format(_pickedDate),
+                                  : DateFormat.yMd().format(_startingDate),
                               style: TextStyle(
-                                fontSize: 15,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
@@ -111,57 +111,165 @@ class _ConfirmBookingState extends State<ConfirmBooking> {
                       ),
                     ],
                   ),
-                  SizedBox(height: 30),
+                  SizedBox(height: 20),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Expanded(
                         child: FittedBox(
                           child: Text(
-                            'Choose a Slot',
-                            style: TextStyle(
-                                color: Color(0xFFFF8038), fontSize: 22),
+                            _endingDate == null
+                                ? 'Choose end date'
+                                : 'Edit Choosen Date',
+                            style: TextStyle(color: Color(0xFFFF8038)),
                           ),
                         ),
                       ),
-                      Spacer(),
+                      SizedBox(width: 20),
                       Expanded(
-                        child: DropdownButton(
-                          dropdownColor: Color(0xFFFF8038),
-                          icon: Icon(
-                            Icons.arrow_drop_down_circle_sharp,
-                            color: Color(0xFFFF8038),
-                            size: 17,
-                          ),
-                          hint: Text(
-                            isSlotPicked ? _pickedSlots : 'Slots',
-                            style: TextStyle(
-                              color: Color(0xFFFF8038),
-                              fontSize: 15,
-                              fontWeight: FontWeight.bold,
+                        child: FittedBox(
+                          child: FlatButton(
+                            textColor: Color(0xFFFF8038),
+                            onPressed: () {
+                              if (_startingDate != null) {
+                                showDatePicker(
+                                    builder:
+                                        (BuildContext context, Widget child) {
+                                      return Theme(
+                                        data: ThemeData.dark().copyWith(
+                                          colorScheme: ColorScheme.dark(
+                                            primary: Color(0xFFFF8038),
+                                            onPrimary: Colors.white,
+                                            surface: Color(0xFF033249),
+                                            onSurface: Color(0xFFFF8038),
+                                          ),
+                                          dialogBackgroundColor:
+                                              Color(0xFF033249),
+                                        ),
+                                        child: child,
+                                      );
+                                    },
+                                    context: context,
+                                    initialDate: _startingDate,
+                                    firstDate: _startingDate,
+                                    lastDate: _startingDate.add(
+                                      Duration(
+                                        days: 5,
+                                      ),
+                                    )).then((value) {
+                                  if (value == null) return;
+                                  setState(() {
+                                    _endingDate = value;
+                                  });
+                                });
+                              }
+                            },
+                            child: Text(
+                              _endingDate == null
+                                  ? 'Choose a Date'
+                                  : DateFormat.yMd().format(_startingDate),
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ),
-                          items: ['10-12 am ', '1-3 pm ', '4-6 pm ', '7-10 pm ']
-                              .map(
-                            (slots) {
-                              return DropdownMenuItem(
-                                value: slots,
-                                onTap: () {
-                                  setState(() {
-                                    isSlotPicked = true;
-                                    _pickedSlots = slots;
-                                  });
-                                },
-                                child: Text(slots),
-                              );
-                            },
-                          ).toList(),
-                          onChanged: (value) {},
                         ),
                       ),
                     ],
                   ),
-                  SizedBox(height: 30),
+                  SizedBox(height: 20),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: FittedBox(
+                          child: Text(
+                            _startTime == null
+                                ? 'Choose start time'
+                                : 'Edit Choosen time',
+                            style: TextStyle(color: Color(0xFFFF8038)),
+                          ),
+                        ),
+                      ),
+                      SizedBox(width: 20),
+                      Expanded(
+                        child: FittedBox(
+                          child: FlatButton(
+                            textColor: Color(0xFFFF8038),
+                            onPressed: () {
+                              showTimePicker(
+                                context: context,
+                                initialTime: TimeOfDay.now(),
+                              ).then((value) {
+                                if (value == null) {
+                                  return;
+                                }
+                                setState(() {
+                                  _startTime = value;
+                                });
+                              });
+                            },
+                            child: Text(
+                              _startTime == null
+                                  ? 'Choose time'
+                                  : _startTime.format(context).toString(),
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 20),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: FittedBox(
+                          child: Text(
+                            _endTime == null
+                                ? 'Choose end time'
+                                : 'Edit Choosen time',
+                            style: TextStyle(color: Color(0xFFFF8038)),
+                          ),
+                        ),
+                      ),
+                      SizedBox(width: 20),
+                      Expanded(
+                        child: FittedBox(
+                          child: FlatButton(
+                            textColor: Color(0xFFFF8038),
+                            onPressed: () {
+                              if (_startTime != null) {
+                                showTimePicker(
+                                  context: context,
+                                  initialTime: TimeOfDay.now(),
+                                ).then((value) {
+                                  if (value == null) {
+                                    return;
+                                  }
+                                  setState(() {
+                                    _endTime = value;
+                                  });
+                                });
+                              }
+                            },
+                            child: Text(
+                              _endTime == null
+                                  ? 'Choose time'
+                                  : _endTime.format(context).toString(),
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 20),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     crossAxisAlignment: CrossAxisAlignment.baseline,
@@ -171,8 +279,7 @@ class _ConfirmBookingState extends State<ConfirmBooking> {
                         child: FittedBox(
                           child: Text(
                             'Enter no. of People',
-                            style: TextStyle(
-                                color: Color(0xFFFF8038), fontSize: 22),
+                            style: TextStyle(color: Color(0xFFFF8038)),
                           ),
                         ),
                       ),
@@ -206,7 +313,7 @@ class _ConfirmBookingState extends State<ConfirmBooking> {
                       ),
                     ],
                   ),
-                  SizedBox(height: 60),
+                  SizedBox(height: 40),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -231,7 +338,7 @@ class _ConfirmBookingState extends State<ConfirmBooking> {
                       ),
                     ],
                   ),
-                  SizedBox(height: 100),
+                  SizedBox(height: 80),
                   RaisedButton.icon(
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(15),
@@ -243,12 +350,8 @@ class _ConfirmBookingState extends State<ConfirmBooking> {
                       setState(() {
                         _isBookingStart = true;
                       });
-                      _firestore
-                          .collection('bookings')
-                          .doc(_auth.currentUser.uid)
-                          .set({
-                        'date': DateFormat.yMd().format(_pickedDate),
-                        'slot': _pickedSlots,
+                      _firestore.collection('bookings').doc().set({
+                        'date': Timestamp.fromDate(_startingDate),
                         'peoples': _controller.text.trim() == ''
                             ? 0
                             : int.parse(_controller.text.trim()),
@@ -285,24 +388,6 @@ class _ConfirmBookingState extends State<ConfirmBooking> {
                       ),
                     ),
                   ),
-                  SizedBox(height: 30),
-                  RaisedButton.icon(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(15),
-                    ),
-                    padding: EdgeInsets.symmetric(horizontal: 70, vertical: 10),
-                    color: Color(0xFFFF8038),
-                    textColor: Color(0xFF033428),
-                    onPressed: () {},
-                    icon: Icon(Icons.call),
-                    label: Text(
-                      'Call Manager',
-                      style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
                 ],
               ),
             ),
@@ -312,3 +397,94 @@ class _ConfirmBookingState extends State<ConfirmBooking> {
     );
   }
 }
+
+class ChooseDateOrTime extends StatelessWidget {
+  final String iconText;
+  final String endText;
+  final Function onTap;
+
+  ChooseDateOrTime({
+    this.endText,
+    this.iconText,
+    this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        FlatButton(
+          onPressed: onTap,
+          child: Text(
+            iconText,
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 17,
+              color: Color(0xFFFF8038),
+            ),
+          ),
+        ),
+        Text(
+          endText,
+          style: TextStyle(
+            fontSize: 17,
+            color: Color(0xFFFF8038),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+//slots logic
+
+// Row(
+// mainAxisAlignment: MainAxisAlignment.spaceBetween,
+// children: [
+// Expanded(
+// child: FittedBox(
+// child: Text(
+// 'Choose a Slot',
+// style: TextStyle(
+// color: Color(0xFFFF8038), fontSize: 22),
+// ),
+// ),
+// ),
+// Spacer(),
+// Expanded(
+// child: DropdownButton(
+// dropdownColor: Color(0xFFFF8038),
+// icon: Icon(
+// Icons.arrow_drop_down_circle_sharp,
+// color: Color(0xFFFF8038),
+// size: 17,
+// ),
+// hint: Text(
+// isSlotPicked ? _pickedSlots : 'Slots',
+// style: TextStyle(
+// color: Color(0xFFFF8038),
+// fontSize: 15,
+// fontWeight: FontWeight.bold,
+// ),
+// ),
+// items: ['10-12 am ', '1-3 pm ', '4-6 pm ', '7-10 pm ']
+// .map(
+// (slots) {
+// return DropdownMenuItem(
+// value: slots,
+// onTap: () {
+// setState(() {
+// isSlotPicked = true;
+// _pickedSlots = slots;
+// });
+// },
+// child: Text(slots),
+// );
+// },
+// ).toList(),
+// onChanged: (value) {},
+// ),
+// ),
+// ],
+// ),

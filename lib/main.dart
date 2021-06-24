@@ -1,5 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:event_planner_udaipur/providers/events.dart';
 import 'package:event_planner_udaipur/screens/home_screen.dart';
+import 'package:event_planner_udaipur/screens/user_detail_form.dart';
+import 'package:event_planner_udaipur/screens/user_profile.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -16,15 +19,46 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   await Firebase.initializeApp();
-  runApp(MyApp());
+
+  User _firebaseUser = FirebaseAuth.instance.currentUser;
+  if (_firebaseUser != null) {
+    bool _doesContain = false;
+    FirebaseFirestore _firestore = FirebaseFirestore.instance;
+    QuerySnapshot _usersCollection = await _firestore.collection('users').get();
+    List<QueryDocumentSnapshot> _usersCollectionDOC = _usersCollection.docs;
+
+    for (int i = 0; i < _usersCollectionDOC.length; i++) {
+      if (_usersCollectionDOC[i].id == _firebaseUser.uid) {
+        _doesContain = true;
+      }
+    }
+    runApp(MyApp(doesContain: _doesContain));
+  } else
+    runApp(MyApp(doesContain: null));
 }
 
 class MyApp extends StatelessWidget {
+  bool doesContain;
+  MyApp({this.doesContain});
+  User _firebaseUser = FirebaseAuth.instance.currentUser;
+  Widget _firstWidget;
   @override
   Widget build(BuildContext context) {
+    if (doesContain == null) {
+      if (_firebaseUser == null) {
+        _firstWidget = LoginScreen();
+      } else {
+        _firstWidget = HomeScreen();
+      }
+    } else {
+      if (!doesContain) {
+        _firstWidget = UserDetailForm();
+      } else {
+        _firstWidget = HomeScreen();
+      }
+    }
     return ChangeNotifierProvider(
       create: (ctx) => EventsData(),
-      // builder: (ctx) => EventsData(),
       child: MaterialApp(
         title: 'Event Planner',
         debugShowCheckedModeBanner: false,
@@ -33,15 +67,7 @@ class MyApp extends StatelessWidget {
           primaryColor: Color(0xFF033249),
           fontFamily: 'Montserrat',
         ),
-        home: StreamBuilder<User>(
-          stream: FirebaseAuth.instance.authStateChanges(),
-          builder: (ctx, userSnapShot) {
-            if (userSnapShot.hasData) {
-              return HomeScreen();
-            }
-            return LoginScreen();
-          },
-        ),
+        home: _firstWidget,
         onGenerateRoute: (settings) {
           switch (settings.name) {
             case HomeScreen.homeScreen:
@@ -82,6 +108,22 @@ class MyApp extends StatelessWidget {
                 type: PageTransitionType.rightToLeft,
               );
               break;
+            case UserProfile.userProfileScreen:
+              return PageTransition(
+                settings: settings,
+                child: UserProfile(),
+                curve: Curves.linear,
+                type: PageTransitionType.rightToLeft,
+              );
+              break;
+            case UserDetailForm.workerDetailForm:
+              return PageTransition(
+                settings: settings,
+                child: UserDetailForm(),
+                curve: Curves.linear,
+                type: PageTransitionType.rightToLeft,
+              );
+              break;
             default:
               return null;
           }
@@ -90,3 +132,13 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+
+// StreamBuilder<User>(
+// stream: FirebaseAuth.instance.authStateChanges(),
+// builder: (ctx, userSnapShot) {
+// if (userSnapShot.hasData) {
+// return HomeScreen();
+// }
+// return LoginScreen();
+// },
+// )

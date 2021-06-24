@@ -226,7 +226,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             )
           : Center(
-              child: CircularProgressIndicator(),
+              child: CircularProgressIndicator(color: Color(0xFFFF8038)),
             ),
     );
   }
@@ -264,7 +264,7 @@ class GridOfEvents extends StatelessWidget {
           }
         }
         return Center(
-          child: CircularProgressIndicator(),
+          child: CircularProgressIndicator(color: Color(0xFFFF8038)),
         );
       },
     );
