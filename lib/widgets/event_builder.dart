@@ -5,11 +5,12 @@ import '../screens/event_venues_list.dart';
 
 class EventBuilder extends StatelessWidget {
   final List<QueryDocumentSnapshot> _eventList;
-  //final List<String> _eventName;
+  final String eventDocID;
   final int index;
   EventBuilder(
     this._eventList,
     this.index,
+    this.eventDocID,
   );
   @override
   Widget build(BuildContext context) {
@@ -20,7 +21,8 @@ class EventBuilder extends StatelessWidget {
             arguments: [
               _eventList[index].data()['name'],
               index,
-              _eventList[index].data()['image']
+              _eventList[index].data()['image'],
+              eventDocID,
             ]);
       },
       child: Card(

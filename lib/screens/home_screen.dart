@@ -256,7 +256,7 @@ class GridOfEvents extends StatelessWidget {
                     mainAxisSpacing: 5,
                   ),
                   itemBuilder: (ctx, index) {
-                    return EventBuilder(eventList, index);
+                    return EventBuilder(eventList, index, eventList[index].id);
                   },
                 ),
               ),

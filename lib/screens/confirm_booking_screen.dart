@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:event_planner_udaipur/screens/home_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -15,19 +16,109 @@ class _ConfirmBookingState extends State<ConfirmBooking> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   bool _isBookingStart = false;
+  String _venueDocID;
 
   DateTime _startingDate;
   DateTime _endingDate;
   TimeOfDay _startTime;
   TimeOfDay _endTime;
-  String _numberOfPeople;
+  String _numberOfPeople = '0';
   String _totalPrice;
   TextEditingController _controller = TextEditingController();
 
   bool isSlotPicked = false;
 
+  void _trySavingForm() async {
+    if (_startingDate == null ||
+        _endingDate == null ||
+        _startTime == null ||
+        _endTime == null ||
+        _numberOfPeople == null) {
+      showDialog(
+        context: context,
+        builder: (ctx) {
+          return AlertDialog(
+            title: Text('Please fill all info'),
+            actions: [
+              FlatButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text('Ok'),
+              )
+            ],
+          );
+        },
+      );
+    } else {
+      setState(() {
+        _isBookingStart = true;
+      });
+
+      await _tryConfirmBooking();
+
+      setState(() {
+        _isBookingStart = false;
+      });
+
+      await showDialog(
+        context: context,
+        builder: (ctx) {
+          return GestureDetector(
+            onTap: () {},
+            behavior: HitTestBehavior.opaque,
+            child: SimpleDialog(
+              titlePadding: const EdgeInsets.all(20),
+              title: Text('Your Booking is Confirmed'),
+              children: [
+                SimpleDialogOption(
+                  child: Text('OK'),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            ),
+          );
+        },
+      );
+      Navigator.of(context)
+          .pushNamedAndRemoveUntil(HomeScreen.homeScreen, (route) => false);
+    }
+  }
+
+  Future<void> _tryConfirmBooking() async {
+    String bookingDocId;
+    await _firestore.collection('bookings').add({
+      'startDate': Timestamp.fromDate(_startingDate),
+      'endDate': Timestamp.fromDate(_endingDate),
+      'startTime': _startTime.format(context).toString(),
+      'endTime': _endTime.format(context).toString(),
+      'peoples': _controller.text.trim() == ''
+          ? '0'
+          : int.parse(_controller.text.trim()).toString(),
+      'totalAmount': _controller.text.trim() == ''
+          ? '0'
+          : (int.parse(_controller.text.trim()) * 100).toString(),
+    }).then((docRef) async {
+      bookingDocId = docRef.id;
+
+      await _firestore.collection('users').doc(_auth.currentUser.uid).update({
+        'bookings': FieldValue.arrayUnion([bookingDocId]),
+        'totalBookings': FieldValue.increment(1),
+      });
+
+      await _firestore.collection('venues').doc(_venueDocID).update({
+        'bookings': FieldValue.arrayUnion([bookingDocId]),
+        'totalBookings': FieldValue.increment(1),
+      });
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    _venueDocID = ModalRoute.of(context).settings.arguments as String;
+
     return Scaffold(
       backgroundColor: Color(0xFF033249),
       appBar: AppBar(
@@ -346,39 +437,7 @@ class _ConfirmBookingState extends State<ConfirmBooking> {
                     padding: EdgeInsets.symmetric(horizontal: 50, vertical: 10),
                     color: Color(0xFFFF8038),
                     textColor: Color(0xFF033428),
-                    onPressed: () {
-                      setState(() {
-                        _isBookingStart = true;
-                      });
-                      _firestore.collection('bookings').doc().set({
-                        'date': Timestamp.fromDate(_startingDate),
-                        'peoples': _controller.text.trim() == ''
-                            ? 0
-                            : int.parse(_controller.text.trim()),
-                        'totalAmount': int.parse(_controller.text.trim()) * 100,
-                      }).then(
-                        (value) {
-                          setState(() {
-                            _isBookingStart = false;
-                          });
-                          return showDialog(
-                            context: context,
-                            builder: (ctx) => AlertDialog(
-                              title: Text('Your Booking is Confirmed'),
-                              actions: [
-                                //TextButton in place of FlatButton
-                                TextButton(
-                                  child: Text('Close'),
-                                  onPressed: () {
-                                    Navigator.pop(context);
-                                  },
-                                )
-                              ],
-                            ),
-                          );
-                        },
-                      );
-                    },
+                    onPressed: () {},
                     icon: Icon(Icons.calendar_today),
                     label: Text(
                       'Confirm Booking',

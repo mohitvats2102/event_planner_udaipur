@@ -15,6 +15,7 @@ class VenueDetailScreen extends StatelessWidget {
         ModalRoute.of(context).settings.arguments as List<dynamic>;
     int _index = _dataFromPreviousScreen[0];
     QueryDocumentSnapshot _doc = _dataFromPreviousScreen[1];
+    String _venueDocId = _dataFromPreviousScreen[2];
 
     return Scaffold(
       appBar: AppBar(
@@ -181,7 +182,8 @@ class VenueDetailScreen extends StatelessWidget {
               textColor: _themeCtx.primaryColor,
               onPressed: () {
                 Navigator.pushNamed(
-                    context, ConfirmBooking.confirmBookingScreen);
+                    context, ConfirmBooking.confirmBookingScreen,
+                    arguments: _venueDocId);
               },
               icon: Icon(Icons.calendar_today),
               label: Text(
