@@ -1,6 +1,7 @@
 import 'package:event_planner_udaipur/screens/user_bookings.dart';
 import 'package:event_planner_udaipur/screens/user_profile.dart';
 import 'package:flutter/material.dart';
+import 'package:event_planner_udaipur/constant.dart';
 
 class MainDrawer extends StatelessWidget {
   final String userName;
@@ -15,13 +16,13 @@ class MainDrawer extends StatelessWidget {
       onTap: onTap,
       leading: Icon(
         icon,
-        color: Color(0xFFFF8038),
+        color: kdarkTeal,
       ),
       title: Text(
         text,
         style: TextStyle(
           fontSize: 18,
-          color: Color(0xFFFF8038),
+          color: kdarkTeal,
         ),
       ),
     );
@@ -52,14 +53,14 @@ class MainDrawer extends StatelessWidget {
                       'Welcome to',
                       style: TextStyle(
                         fontSize: 22,
-                        color: Colors.white,
+                        color: Color(0xFFFF8038),
                       ),
                     ),
                     Text(
                       'Event Planner',
                       style: TextStyle(
                         fontSize: 22,
-                        color: Colors.white,
+                        color: Color(0xFFFF8038),
                         letterSpacing: 1.5,
                         fontWeight: FontWeight.w600,
                       ),

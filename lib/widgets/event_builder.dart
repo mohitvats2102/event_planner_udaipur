@@ -19,7 +19,7 @@ class EventBuilder extends StatelessWidget {
         Navigator.of(context).pushNamed(VenueList.venueScreen,
             //change here
             arguments: [
-              _eventList[index].data()['name'],
+              _eventList[index].id,
               index,
               _eventList[index].data()['image'],
               eventDocID,
@@ -47,7 +47,7 @@ class EventBuilder extends StatelessWidget {
             ),
             child: FittedBox(
               child: Text(
-                _eventList[index].data()['name'],
+                _eventList[index].id,
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 18,

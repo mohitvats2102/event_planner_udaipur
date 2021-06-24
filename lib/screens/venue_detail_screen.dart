@@ -55,43 +55,43 @@ class VenueDetailScreen extends StatelessWidget {
               ),
             ),
           ),
-          SizedBox(height: 5),
-          Center(
-            child: Text(
-              'More Views',
-              style: TextStyle(
-                color: Color(0xFFFF8038),
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-          SizedBox(height: 5),
-          Container(
-            width: double.infinity,
-            height: 100,
-            child: ListView(
-              scrollDirection: Axis.horizontal,
-              children: venueImgList.map(
-                (imgUrl) {
-                  return Container(
-                    width: _deviceSize.width * 0.35,
-                    margin: EdgeInsets.symmetric(horizontal: 5),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.all(
-                        Radius.circular(10),
-                      ),
-                      child: Image.network(
-                        imgUrl,
-                        fit: BoxFit.fill,
-                      ),
-                    ),
-                  );
-                },
-              ).toList(),
-            ),
-          ),
-          SizedBox(height: 10),
+          // SizedBox(height: 5),
+          // Center(
+          //   child: Text(
+          //     'More Views',
+          //     style: TextStyle(
+          //       color: Color(0xFFFF8038),
+          //       fontSize: 20,
+          //       fontWeight: FontWeight.bold,
+          //     ),
+          //   ),
+          // ),
+          // SizedBox(height: 5),
+          // Container(
+          //   width: double.infinity,
+          //   height: 100,
+          //   child: ListView(
+          //     scrollDirection: Axis.horizontal,
+          //     children: venueImgList.map(
+          //       (imgUrl) {
+          //         return Container(
+          //           width: _deviceSize.width * 0.35,
+          //           margin: EdgeInsets.symmetric(horizontal: 5),
+          //           child: ClipRRect(
+          //             borderRadius: BorderRadius.all(
+          //               Radius.circular(10),
+          //             ),
+          //             child: Image.network(
+          //               imgUrl,
+          //               fit: BoxFit.fill,
+          //             ),
+          //           ),
+          //         );
+          //       },
+          //     ).toList(),
+          //   ),
+          // ),
+          //  SizedBox(height: 10),
           Expanded(
             child: Card(
               //margin: EdgeInsets.symmetric(horizontal: 10),
