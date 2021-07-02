@@ -24,7 +24,7 @@ class _VenueListState extends State<VenueList> {
         await _firestore.collection('events').doc(_eventDocID).get();
     _venueArray = _selectedEventDoc.data()['venueArray'];
 
-    if (_venueArray.length == 0)
+    if (_venueArray == null || _venueArray.length == 0)
       _isVenueArrayEmpty = true;
     else
       _isVenueArrayEmpty = false;
