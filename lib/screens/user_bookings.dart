@@ -61,7 +61,7 @@ class _UserBookingsState extends State<UserBookings> {
           : StreamBuilder<QuerySnapshot>(
               stream: _firestore
                   .collection('bookings')
-                  .orderBy('startDate')
+                  .orderBy('startDate', descending: true)
                   .snapshots(),
               builder: (ctx, asyncSnap) {
                 if (asyncSnap.hasError) {

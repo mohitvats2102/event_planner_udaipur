@@ -16,8 +16,10 @@ class _ConfirmBookingState extends State<ConfirmBooking> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   bool _isBookingStart = false;
-  String _venueDocID;
 
+  String _venueDocID;
+  int _charges24 = 0;
+  int _cateringCharges = 0;
   DateTime _startingDate;
   DateTime _endingDate;
   TimeOfDay _startTime;
@@ -129,8 +131,11 @@ class _ConfirmBookingState extends State<ConfirmBooking> {
 
   @override
   Widget build(BuildContext context) {
-    _venueDocID = ModalRoute.of(context).settings.arguments as String;
-
+    List<dynamic> _routsArgs =
+        ModalRoute.of(context).settings.arguments as List<dynamic>;
+    _venueDocID = _routsArgs[0];
+    _charges24 = int.parse(_routsArgs[1]);
+    _cateringCharges = int.parse(_routsArgs[2]);
     return Scaffold(
       backgroundColor: Color(0xFF033249),
       appBar: AppBar(
@@ -148,7 +153,7 @@ class _ConfirmBookingState extends State<ConfirmBooking> {
         inAsyncCall: _isBookingStart,
         child: SafeArea(
           child: Padding(
-            padding: EdgeInsets.symmetric(vertical: 5, horizontal: 5),
+            padding: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
             child: SingleChildScrollView(
               child: Column(
                 children: [
@@ -156,124 +161,124 @@ class _ConfirmBookingState extends State<ConfirmBooking> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Expanded(
-                        child: FittedBox(
+                        child: Text(
+                          _startingDate == null
+                              ? 'Choose Starting date'
+                              : 'Edit Choosen Date',
+                          style: TextStyle(
+                            color: Color(0xFFFF8038),
+                            fontSize: 20,
+                          ),
+                        ),
+                      ),
+                      SizedBox(width: 20),
+                      Expanded(
+                        child: FlatButton(
+                          textColor: Color(0xFFFF8038),
+                          onPressed: () {
+                            showDatePicker(
+                              builder: (BuildContext context, Widget child) {
+                                return Theme(
+                                  data: ThemeData.dark().copyWith(
+                                    colorScheme: ColorScheme.dark(
+                                      primary: Color(0xFFFF8038),
+                                      onPrimary: Colors.white,
+                                      surface: Color(0xFF033249),
+                                      onSurface: Color(0xFFFF8038),
+                                    ),
+                                    dialogBackgroundColor: Color(0xFF033249),
+                                  ),
+                                  child: child,
+                                );
+                              },
+                              context: context,
+                              initialDate: DateTime.now(),
+                              firstDate: DateTime.now(),
+                              lastDate: DateTime.now().add(
+                                Duration(
+                                  days: 3,
+                                ),
+                              ),
+                            ).then((value) {
+                              if (value == null) return;
+                              setState(() {
+                                _startingDate = value;
+                              });
+                            });
+                          },
                           child: Text(
                             _startingDate == null
-                                ? 'Choose Starting date'
-                                : 'Edit Choosen Date',
-                            style: TextStyle(color: Color(0xFFFF8038)),
+                                ? 'Choose a Date'
+                                : DateFormat.yMd().format(_startingDate),
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 20,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 20),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: Text(
+                          _endingDate == null
+                              ? 'Choose end date'
+                              : 'Edit Choosen Date',
+                          style: TextStyle(
+                            color: Color(0xFFFF8038),
+                            fontSize: 20,
                           ),
                         ),
                       ),
                       SizedBox(width: 20),
                       Expanded(
-                        child: FittedBox(
-                          child: FlatButton(
-                            textColor: Color(0xFFFF8038),
-                            onPressed: () {
+                        child: FlatButton(
+                          textColor: Color(0xFFFF8038),
+                          onPressed: () {
+                            if (_startingDate != null) {
                               showDatePicker(
-                                builder: (BuildContext context, Widget child) {
-                                  return Theme(
-                                    data: ThemeData.dark().copyWith(
-                                      colorScheme: ColorScheme.dark(
-                                        primary: Color(0xFFFF8038),
-                                        onPrimary: Colors.white,
-                                        surface: Color(0xFF033249),
-                                        onSurface: Color(0xFFFF8038),
+                                  builder:
+                                      (BuildContext context, Widget child) {
+                                    return Theme(
+                                      data: ThemeData.dark().copyWith(
+                                        colorScheme: ColorScheme.dark(
+                                          primary: Color(0xFFFF8038),
+                                          onPrimary: Colors.white,
+                                          surface: Color(0xFF033249),
+                                          onSurface: Color(0xFFFF8038),
+                                        ),
+                                        dialogBackgroundColor:
+                                            Color(0xFF033249),
                                       ),
-                                      dialogBackgroundColor: Color(0xFF033249),
+                                      child: child,
+                                    );
+                                  },
+                                  context: context,
+                                  initialDate: _startingDate,
+                                  firstDate: _startingDate,
+                                  lastDate: _startingDate.add(
+                                    Duration(
+                                      days: 5,
                                     ),
-                                    child: child,
-                                  );
-                                },
-                                context: context,
-                                initialDate: DateTime.now(),
-                                firstDate: DateTime.now(),
-                                lastDate: DateTime.now().add(
-                                  Duration(
-                                    days: 3,
-                                  ),
-                                ),
-                              ).then((value) {
+                                  )).then((value) {
                                 if (value == null) return;
                                 setState(() {
-                                  _startingDate = value;
+                                  _endingDate = value;
                                 });
                               });
-                            },
-                            child: Text(
-                              _startingDate == null
-                                  ? 'Choose a Date'
-                                  : DateFormat.yMd().format(_startingDate),
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 20),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Expanded(
-                        child: FittedBox(
+                            }
+                          },
                           child: Text(
                             _endingDate == null
-                                ? 'Choose end date'
-                                : 'Edit Choosen Date',
-                            style: TextStyle(color: Color(0xFFFF8038)),
-                          ),
-                        ),
-                      ),
-                      SizedBox(width: 20),
-                      Expanded(
-                        child: FittedBox(
-                          child: FlatButton(
-                            textColor: Color(0xFFFF8038),
-                            onPressed: () {
-                              if (_startingDate != null) {
-                                showDatePicker(
-                                    builder:
-                                        (BuildContext context, Widget child) {
-                                      return Theme(
-                                        data: ThemeData.dark().copyWith(
-                                          colorScheme: ColorScheme.dark(
-                                            primary: Color(0xFFFF8038),
-                                            onPrimary: Colors.white,
-                                            surface: Color(0xFF033249),
-                                            onSurface: Color(0xFFFF8038),
-                                          ),
-                                          dialogBackgroundColor:
-                                              Color(0xFF033249),
-                                        ),
-                                        child: child,
-                                      );
-                                    },
-                                    context: context,
-                                    initialDate: _startingDate,
-                                    firstDate: _startingDate,
-                                    lastDate: _startingDate.add(
-                                      Duration(
-                                        days: 5,
-                                      ),
-                                    )).then((value) {
-                                  if (value == null) return;
-                                  setState(() {
-                                    _endingDate = value;
-                                  });
-                                });
-                              }
-                            },
-                            child: Text(
-                              _endingDate == null
-                                  ? 'Choose a Date'
-                                  : DateFormat.yMd().format(_endingDate),
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                              ),
+                                ? 'Choose a Date'
+                                : DateFormat.yMd().format(_endingDate),
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 20,
                             ),
                           ),
                         ),
@@ -285,21 +290,67 @@ class _ConfirmBookingState extends State<ConfirmBooking> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Expanded(
-                        child: FittedBox(
-                          child: Text(
-                            _startTime == null
-                                ? 'Choose start time'
-                                : 'Edit Choosen time',
-                            style: TextStyle(color: Color(0xFFFF8038)),
+                        child: Text(
+                          _startTime == null
+                              ? 'Choose start time'
+                              : 'Edit Choosen time',
+                          style: TextStyle(
+                            color: Color(0xFFFF8038),
+                            fontSize: 20,
                           ),
                         ),
                       ),
                       SizedBox(width: 20),
                       Expanded(
-                        child: FittedBox(
-                          child: FlatButton(
-                            textColor: Color(0xFFFF8038),
-                            onPressed: () {
+                        child: FlatButton(
+                          textColor: Color(0xFFFF8038),
+                          onPressed: () {
+                            showTimePicker(
+                              context: context,
+                              initialTime: TimeOfDay.now(),
+                            ).then((value) {
+                              if (value == null) {
+                                return;
+                              }
+                              setState(() {
+                                _startTime = value;
+                              });
+                            });
+                          },
+                          child: Text(
+                            _startTime == null
+                                ? 'Choose time'
+                                : _startTime.format(context).toString(),
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 20,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 20),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: Text(
+                          _endTime == null
+                              ? 'Choose end time'
+                              : 'Edit Choosen time',
+                          style: TextStyle(
+                            color: Color(0xFFFF8038),
+                            fontSize: 20,
+                          ),
+                        ),
+                      ),
+                      SizedBox(width: 20),
+                      Expanded(
+                        child: FlatButton(
+                          textColor: Color(0xFFFF8038),
+                          onPressed: () {
+                            if (_startTime != null) {
                               showTimePicker(
                                 context: context,
                                 initialTime: TimeOfDay.now(),
@@ -308,64 +359,18 @@ class _ConfirmBookingState extends State<ConfirmBooking> {
                                   return;
                                 }
                                 setState(() {
-                                  _startTime = value;
+                                  _endTime = value;
                                 });
                               });
-                            },
-                            child: Text(
-                              _startTime == null
-                                  ? 'Choose time'
-                                  : _startTime.format(context).toString(),
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 20),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Expanded(
-                        child: FittedBox(
+                            }
+                          },
                           child: Text(
                             _endTime == null
-                                ? 'Choose end time'
-                                : 'Edit Choosen time',
-                            style: TextStyle(color: Color(0xFFFF8038)),
-                          ),
-                        ),
-                      ),
-                      SizedBox(width: 20),
-                      Expanded(
-                        child: FittedBox(
-                          child: FlatButton(
-                            textColor: Color(0xFFFF8038),
-                            onPressed: () {
-                              if (_startTime != null) {
-                                showTimePicker(
-                                  context: context,
-                                  initialTime: TimeOfDay.now(),
-                                ).then((value) {
-                                  if (value == null) {
-                                    return;
-                                  }
-                                  setState(() {
-                                    _endTime = value;
-                                  });
-                                });
-                              }
-                            },
-                            child: Text(
-                              _endTime == null
-                                  ? 'Choose time'
-                                  : _endTime.format(context).toString(),
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                              ),
+                                ? 'Choose time'
+                                : _endTime.format(context).toString(),
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 20,
                             ),
                           ),
                         ),
@@ -379,10 +384,11 @@ class _ConfirmBookingState extends State<ConfirmBooking> {
                     textBaseline: TextBaseline.alphabetic,
                     children: [
                       Expanded(
-                        child: FittedBox(
-                          child: Text(
-                            'Enter no. of People',
-                            style: TextStyle(color: Color(0xFFFF8038)),
+                        child: Text(
+                          'Enter no. of People',
+                          style: TextStyle(
+                            color: Color(0xFFFF8038),
+                            fontSize: 20,
                           ),
                         ),
                       ),
@@ -421,20 +427,20 @@ class _ConfirmBookingState extends State<ConfirmBooking> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Expanded(
-                        child: FittedBox(
-                          child: Text(
-                            'Total Amount',
-                            style: TextStyle(
-                                color: Color(0xFFFF8038), fontSize: 22),
+                        child: Text(
+                          'Approx charges per day',
+                          style: TextStyle(
+                            color: Color(0xFFFF8038),
+                            fontSize: 22,
                           ),
                         ),
                       ),
-                      Spacer(),
+                      SizedBox(width: 20),
                       FittedBox(
                         child: Text(
                           _controller.text.trim() == ''
                               ? '0'
-                              : '${int.parse(_controller.text.trim()) * 100}',
+                              : '${_charges24 + (int.parse(_controller.text.trim()) * _cateringCharges)}',
                           style:
                               TextStyle(color: Color(0xFFFF8038), fontSize: 20),
                         ),

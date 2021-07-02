@@ -106,11 +106,10 @@ class _VenueListState extends State<VenueList> {
                 height: _deviceSize.height * 0.67,
                 width: _deviceSize.width,
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Padding(
                       padding: const EdgeInsets.only(
-                        left: 20,
                         bottom: 10,
                       ),
                       child: Text(
@@ -137,15 +136,15 @@ class _VenueListState extends State<VenueList> {
                                     .collection('venues')
                                     .orderBy('name')
                                     .get(),
-                                builder: (ctx, asynSnapshot) {
-                                  if (asynSnapshot.connectionState ==
+                                builder: (ctx, asyncSnapshot) {
+                                  if (asyncSnapshot.connectionState ==
                                       ConnectionState.done) {
-                                    if (asynSnapshot.hasData) {
+                                    if (asyncSnapshot.hasData) {
                                       List<QueryDocumentSnapshot> venuesList =
-                                          asynSnapshot.data.docs.where((docId) {
+                                          asyncSnapshot.data.docs
+                                              .where((docId) {
                                         return _venueArray.contains(docId.id);
                                       }).toList();
-
                                       return Expanded(
                                         child: Container(
                                           child: ListView.builder(
@@ -199,26 +198,20 @@ class _VenueListState extends State<VenueList> {
                                                       ),
                                                       child: Row(
                                                         children: [
-                                                          Container(
-                                                            child: FittedBox(
-                                                              child: Text(
-                                                                venuesList[i]
-                                                                        .data()[
-                                                                    'name'],
-                                                                style:
-                                                                    TextStyle(
-                                                                  fontSize: 18,
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .bold,
-                                                                  color: themeCtx
-                                                                      .accentColor,
-                                                                ),
+                                                          Expanded(
+                                                            child: Text(
+                                                              venuesList[i]
+                                                                      .data()[
+                                                                  'name'],
+                                                              style: TextStyle(
+                                                                fontSize: 17,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .bold,
+                                                                color: themeCtx
+                                                                    .accentColor,
                                                               ),
                                                             ),
-                                                            width: _deviceSize
-                                                                    .width *
-                                                                0.41,
                                                           ),
                                                           RaisedButton.icon(
                                                             elevation: 0,
@@ -267,7 +260,8 @@ class _VenueListState extends State<VenueList> {
                                     }
                                   }
                                   return Center(
-                                    child: CircularProgressIndicator(),
+                                    child: CircularProgressIndicator(
+                                        color: Color(0xFFFF8038)),
                                   );
                                 },
                               )

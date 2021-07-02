@@ -76,14 +76,6 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
         elevation: 0,
-        actions: [
-          IconButton(
-            icon: Icon(Icons.logout, color: Color(0xFFFF8038)),
-            onPressed: () {
-              logout(context);
-            },
-          )
-        ],
         backgroundColor: Theme.of(context).primaryColor,
         title: Text(
           'Event Planner',

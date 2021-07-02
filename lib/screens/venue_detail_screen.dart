@@ -55,43 +55,51 @@ class VenueDetailScreen extends StatelessWidget {
               ),
             ),
           ),
-          // SizedBox(height: 5),
-          // Center(
-          //   child: Text(
-          //     'More Views',
-          //     style: TextStyle(
-          //       color: Color(0xFFFF8038),
-          //       fontSize: 20,
-          //       fontWeight: FontWeight.bold,
-          //     ),
-          //   ),
-          // ),
-          // SizedBox(height: 5),
-          // Container(
-          //   width: double.infinity,
-          //   height: 100,
-          //   child: ListView(
-          //     scrollDirection: Axis.horizontal,
-          //     children: venueImgList.map(
-          //       (imgUrl) {
-          //         return Container(
-          //           width: _deviceSize.width * 0.35,
-          //           margin: EdgeInsets.symmetric(horizontal: 5),
-          //           child: ClipRRect(
-          //             borderRadius: BorderRadius.all(
-          //               Radius.circular(10),
-          //             ),
-          //             child: Image.network(
-          //               imgUrl,
-          //               fit: BoxFit.fill,
-          //             ),
-          //           ),
-          //         );
-          //       },
-          //     ).toList(),
-          //   ),
-          // ),
-          //  SizedBox(height: 10),
+          SizedBox(height: 5),
+          Center(
+            child: Text(
+              'More Views',
+              style: TextStyle(
+                color: Color(0xFFFF8038),
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+          SizedBox(height: 5),
+          if (_doc.data()['moreVenueImages'] != null)
+            Container(
+              width: double.infinity,
+              height: 100,
+              child: ListView(
+                scrollDirection: Axis.horizontal,
+                children: (_doc.data()['moreVenueImages'] as List<dynamic>).map(
+                  (imgUrl) {
+                    return Container(
+                      width: _deviceSize.width * 0.35,
+                      margin: EdgeInsets.symmetric(horizontal: 5),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(
+                          width: 0.5,
+                          color: Theme.of(context).accentColor,
+                        ),
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.all(
+                          Radius.circular(10),
+                        ),
+                        child: Image.network(
+                          imgUrl,
+                          fit: BoxFit.fill,
+                        ),
+                      ),
+                    );
+                  },
+                ).toList(),
+              ),
+            ),
+          SizedBox(height: 10),
           Expanded(
             child: Card(
               //margin: EdgeInsets.symmetric(horizontal: 10),
@@ -164,7 +172,48 @@ class VenueDetailScreen extends StatelessWidget {
                         color: _themeCtx.primaryColor,
                       ),
                     ),
-                    SizedBox(height: 30),
+                    SizedBox(height: 10),
+                    Divider(
+                      thickness: 2,
+                      // endIndent: 20,
+                      color: _themeCtx.primaryColor,
+                    ),
+                    SizedBox(height: 10),
+                    Text(
+                      'Charges for 1 day : ${_doc.data()['charges24']} ₹',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: _themeCtx.primaryColor,
+                      ),
+                    ),
+                    SizedBox(height: 10),
+                    Divider(
+                      thickness: 2,
+                      // endIndent: 20,
+                      color: _themeCtx.primaryColor,
+                    ),
+                    SizedBox(height: 10),
+                    Text(
+                      'Catering Charges : ${_doc.data()['cateringCharge']} ₹',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: _themeCtx.primaryColor,
+                      ),
+                    ),
+                    SizedBox(height: 20),
+                    Expanded(
+                      child: Text(
+                        'Note : Additional charges may apply.',
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold,
+                          color: _themeCtx.primaryColor,
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 10),
                   ],
                 ),
               ),
@@ -183,7 +232,11 @@ class VenueDetailScreen extends StatelessWidget {
               onPressed: () {
                 Navigator.pushNamed(
                     context, ConfirmBooking.confirmBookingScreen,
-                    arguments: _venueDocId);
+                    arguments: [
+                      _venueDocId,
+                      _doc.data()['charges24'],
+                      _doc.data()['cateringCharge'],
+                    ]);
               },
               icon: Icon(Icons.calendar_today),
               label: Text(
