@@ -31,28 +31,28 @@ class _UserDetailFormState extends State<UserDetailForm> {
   final _formKey = GlobalKey<FormState>();
 
   void onSave() async {
-    if (_pickedImage == null) {
-      await showDialog(
-        context: context,
-        builder: (ctx) {
-          return GestureDetector(
-            behavior: HitTestBehavior.opaque,
-            child: AlertDialog(
-              title: Text('Please Pick an image'),
-              actions: [
-                TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                  child: Text('Ok'),
-                )
-              ],
-            ),
-          );
-        },
-      );
-      return;
-    }
+    // if (_pickedImage == null) {
+    //   await showDialog(
+    //     context: context,
+    //     builder: (ctx) {
+    //       return GestureDetector(
+    //         behavior: HitTestBehavior.opaque,
+    //         child: AlertDialog(
+    //           title: Text('Please Pick an image'),
+    //           actions: [
+    //             TextButton(
+    //               onPressed: () {
+    //                 Navigator.of(context).pop();
+    //               },
+    //               child: Text('Ok'),
+    //             )
+    //           ],
+    //         ),
+    //       );
+    //     },
+    //   );
+    //   return;
+    // }
     final isValid = _formKey.currentState.validate();
     FocusScope.of(context).unfocus();
     if (isValid) {
@@ -63,21 +63,24 @@ class _UserDetailFormState extends State<UserDetailForm> {
       _currentUserUID = _auth.currentUser.uid;
       String _userImageUrl;
       try {
-        final ref = _firebaseStorage
-            .ref()
-            .child('users_image')
-            .child('$_currentUserUID.jpg');
-        await ref.putFile(_pickedImage).whenComplete(
-          () async {
-            _userImageUrl = await ref.getDownloadURL();
-          },
-        );
-
+        if (_pickedImage != null) {
+          final ref = _firebaseStorage
+              .ref()
+              .child('users_image')
+              .child('$_currentUserUID.jpg');
+          await ref.putFile(_pickedImage).whenComplete(
+            () async {
+              _userImageUrl = await ref.getDownloadURL();
+            },
+          );
+        }
         await _firestore.collection('users').doc(_currentUserUID).set(
           {
             'address': _userAddress,
             'contact': _userContact,
-            'image': _userImageUrl,
+            'image': _pickedImage == null
+                ? 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR1LCcfD_jjhno3IC7VwOHLv6KLNPAq_wfqzA&usqp=CAU'
+                : _userImageUrl,
             'name': _userName,
             'totalBookings': 0,
             'bookings': [],
