@@ -42,7 +42,7 @@ class MainDrawer extends StatelessWidget {
               children: [
                 CircleAvatar(
                   radius: 25,
-                  backgroundImage: AssetImage('assets/images/ep.PNG'),
+                  backgroundImage: AssetImage('assets/images/ep.png'),
                 ),
                 SizedBox(width: 20),
                 Column(
