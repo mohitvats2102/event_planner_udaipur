@@ -1,3 +1,5 @@
+import 'package:event_planner_udaipur/screens/about_us.dart';
+import 'package:event_planner_udaipur/screens/privacy_policy.dart';
 import 'package:event_planner_udaipur/screens/user_bookings.dart';
 import 'package:event_planner_udaipur/screens/user_profile.dart';
 import 'package:flutter/material.dart';
@@ -89,13 +91,19 @@ class MainDrawer extends StatelessWidget {
           buildListTile(
             'User Privacy Policy',
             Icons.privacy_tip,
-            () {},
+            () {
+              Navigator.of(context).pop();
+              Navigator.of(context).pushNamed(PrivacyPolicy.privacyPolicy);
+            },
           ),
           SizedBox(height: 10),
           buildListTile(
             'About Us',
             Icons.assignment,
-            () {},
+            () {
+              Navigator.of(context).pop();
+              Navigator.of(context).pushNamed(AboutUs.aboutUs);
+            },
           ),
           SizedBox(height: 10),
           buildListTile(

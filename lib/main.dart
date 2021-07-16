@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:event_planner_udaipur/providers/events.dart';
+import 'package:event_planner_udaipur/screens/about_us.dart';
 import 'package:event_planner_udaipur/screens/home_screen.dart';
+import 'package:event_planner_udaipur/screens/privacy_policy.dart';
 import 'package:event_planner_udaipur/screens/user_bookings.dart';
 import 'package:event_planner_udaipur/screens/user_detail_form.dart';
 import 'package:event_planner_udaipur/screens/user_profile.dart';
@@ -129,6 +131,22 @@ class MyApp extends StatelessWidget {
               return PageTransition(
                 settings: settings,
                 child: UserBookings(),
+                curve: Curves.linear,
+                type: PageTransitionType.rightToLeft,
+              );
+              break;
+            case AboutUs.aboutUs:
+              return PageTransition(
+                settings: settings,
+                child: AboutUs(),
+                curve: Curves.linear,
+                type: PageTransitionType.rightToLeft,
+              );
+              break;
+            case PrivacyPolicy.privacyPolicy:
+              return PageTransition(
+                settings: settings,
+                child: PrivacyPolicy(),
                 curve: Curves.linear,
                 type: PageTransitionType.rightToLeft,
               );

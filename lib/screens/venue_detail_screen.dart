@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:event_planner_udaipur/constant.dart';
 import 'package:event_planner_udaipur/screens/confirm_booking_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
